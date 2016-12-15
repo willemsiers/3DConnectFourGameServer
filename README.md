@@ -15,7 +15,9 @@ For the client, JSON object should be in the following format.
 ```
 {
     "action" : "connect" | "join" | "start" | "move" | "resign" | "restart" | "exit"
-    "parameters" : [Move ("[a-d][1-4]"), Lobby number ([1-99])]
+    "move" : [a-d][1-4] | null
+    "lobby number" : [1-99] | null
+    "name" : ([a-z][0-9])*
 }
 
 ```
@@ -23,10 +25,19 @@ For the client, JSON object should be in the following format.
 ```
 
 {
-    "message" : "connected" | "joined" | "started"
-    | "make move" | "move denied" |
-    "parameters" : [Move ("[a-d][1-4]"), Free Lobbies ([1-99])]
+    "message" : "enter lobby" | "game" | "started" | "make move" | "move denied" | "you won" | "you lose"
+    "parameters" : [Move ("[a-d][1-4]"), Free Lobbies ([{"room number": [0-99] "opponent" : ([a-z][0-9])* ]), "timeout"]
 }
 
 
 ```
+
+## Server properties
+
+ ### Connecting
+
+ ### Lobby
+
+ ### Game
+
+ ### Timeout
