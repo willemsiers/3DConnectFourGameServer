@@ -36,14 +36,14 @@ Some name/value pairs are not required in every message. The table below shows w
 | Resign        | action:resign             |
 | Restart       | action:restart            |
 | Exit game     | action:exit game          |
-| Disconnect    | action: disconnect        |
+| Disconnect    | action:disconnect        |
 
 
 
 ```
 
 {
-    "event" : "lobby" | "game" | "started" | "make move" | "move denied" | "opponent moved" | "won" | "lost" | "timeout"
+    "event" : "lobby" | "game" | "started" | "make move" | "move denied" | "opponent moved" | "won" | "lost" | "error"
     "move" : "[a-d][1-4]"
     "opponent" :  ([a-z][0-9])*
     "free lobbies" : [{
@@ -51,7 +51,7 @@ Some name/value pairs are not required in every message. The table below shows w
                         "opponent"    : ([a-z][0-9])*
                         }]
     "first player" : true | false
-    "time out" : "[a-z]*" (why the timeout happened)
+    "reason" : "[a-z]*" (why the error happened e.g. time out)
     "message" : any string explaining the message, for debugging purposes
 
 }
@@ -72,7 +72,7 @@ Just like the client messages, the server sends messages and not all name/value 
 | Opponent moved | event:opponent moved, move, message |
 | You won the game | event:won, message|
 | You lost the game | event:lost, message |
-| Time out happened | event:timeout, timeout, message|
+| Server Error | event:error, reason, message|
 
 
 ## Server properties

@@ -5,6 +5,9 @@ public class Move {
     private int row;
     private int column;
 
+    public Move(String moveString) {
+    }
+
     @Override
     public String toString() {
         switch (row){
