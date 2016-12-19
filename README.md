@@ -8,6 +8,7 @@ Version: 0.1
 Connect via a standard TCP socket model. For Java client implementations, I recommend the standard Socket class.
 The IP address and Port number will be given when the tournament starts.
 
+IMPORTANT: Always end a message with a new line "\n"
 
 ## Protocol
 The protocol uses JSON objects, any non-JSON object will be discarded.

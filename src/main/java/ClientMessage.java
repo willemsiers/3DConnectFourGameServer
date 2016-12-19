@@ -26,7 +26,7 @@ public class ClientMessage  {
                         throw new WrongMessageException();
                     }
                 case JOIN:
-                    Object lob = ((JSONObject)obj).get("lobby number");
+                    Object lob = ((JSONObject)obj).get("room number");
                     if (lob != null){
                         Long l = (Long)lob;
                         lobbyNumber = l.intValue();
