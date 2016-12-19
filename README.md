@@ -19,7 +19,7 @@ For the client, JSON object should be in the following format.
 {
     "action" : "connect" | "join" | "start" | "move" | "resign" | "restart" | "exit game" | "disconnect"
     "move" : [a-d][1-4]
-    "lobby number" : [1-99]
+    "room number" : [0-99]
     "name" : ([a-z][0-9])*
 }
 
@@ -30,7 +30,7 @@ Some name/value pairs are not required in every message. The table below shows w
 | Action        | Required                  |
 | ------        | --------                  |
 | Connect       | action:connect, name      |
-| Join game     | action:join, lobby number |
+| Join game     | action:join, room number |
 | Start game    | action:start              |
 | Move          | action:move, move         |
 | Resign        | action:resign             |
