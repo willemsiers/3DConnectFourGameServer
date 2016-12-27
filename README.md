@@ -78,22 +78,21 @@ Just like the client messages, the server sends messages and not all name/value 
 
 ## Server properties
 
- ### Connecting
+### Connecting
 
- ### Lobby
+### Lobby
 
- ### Game
+### Game
 
- ### Timeout
+### Timeout
 
- Timeouts happen in any state of a player, below is the table for approximate timeouts for each state.
+Timeouts happen in any state of a player, below is the table for approximate timeouts for each state.
 
-
- | State | Timeout | Action by server |
- | ----- | ------- | ---------------- |
- | Lobby | 300 s | Disconnected client |
- | Game | 60 s | Put into the lobby |
- | Make move | 5 s| Random move made for this client, opponents' turn |
- | End of game | 60 s      | Put into the lobby |
+| State | Timeout | Action by server |
+| ----- | ------- | ---------------- |
+| Lobby | 300 s | Disconnected client |
+| Game | 60 s | Put into the lobby |
+| Make move | 5 s| Random move made for this client, opponents' turn |
+| End of game | 60 s | Put into the lobby |
 
 
