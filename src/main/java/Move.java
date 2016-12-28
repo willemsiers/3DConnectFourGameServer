@@ -2,23 +2,38 @@
  * Created by Rogier on 16-12-16 in Enschede.
  */
 public class Move {
-    private int row;
-    private int column;
+    private int y;
+    private int x;
+
 
     public Move(String moveString) {
     }
 
+    public Move(int x, int y){
+        this.x = x;
+        this.y = y;
+    }
+
+
+    public int getY() {
+        return y;
+    }
+
+    public int getX() {
+        return x;
+    }
+
     @Override
     public String toString() {
-        switch (row){
+        switch (y){
             case 0:
-                return "a" + column;
+                return "a" + x;
             case 1:
-                return "b" + column;
+                return "b" + x;
             case 2:
-                return "c" + column;
+                return "c" + x;
             case 3:
-                return "d" + column;
+                return "d" + x;
             default:
                 return "error";
         }

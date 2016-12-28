@@ -12,11 +12,47 @@ public class Game {
 
     private Board board;
 
+    private int firstMove;
+
     public int numberOfPlayers(){
         return (player1 != null ? 1 : 0) + (player2 != null ? 1 : 0);
     }
 
 
+    public void init(){
+        board = new Board();
+        firstMove = (int)Math.round(Math.random());
+    }
+
+
+    public void run(){
+        int turn;
+        if (firstMove == 0){
+            turn = 0;
+            Move move = player1.requestMove();
+            this.makeMove(move,turn);
+        } else {
+            turn = 1;
+            Move move = player2.requestMove();
+            this.makeMove(move,turn);
+        }
+
+        while (!board.hasWinner()){
+            turn = (turn + 1) % 2;
+            if (turn == 0){
+                Move move = player1.requestMove();
+                this.makeMove(move,turn);
+            } else {
+                Move move = player2.requestMove();
+                this.makeMove(move,turn);
+            }
+        }
+
+        player1.announceWinner();
+        player2.announceWinner();
+
+
+    }
 
     public String getPlayer1Name(){
         return player1 != null ? player1.getName() : "No opponent yet";
@@ -46,4 +82,17 @@ public class Game {
     public Player getPlayer2() {
         return player2;
     }
+
+    public void makeMove(Move move,int turn){
+        boolean valid = board.isValidMove(move);
+        if (turn == 0){
+            board.makeMove(move,GridMark.RED);
+        } else {
+            board.makeMove(move,GridMark.YELLOW);
+        }
+
+        moveList.add(move);
+//        TODO: Bad move
+    }
 }
+

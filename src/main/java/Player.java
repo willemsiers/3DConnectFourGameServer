@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
 
 /**
  * Created by Rogier on 16-12-16 in Enschede.
@@ -16,7 +17,10 @@ public class Player implements Runnable {
     private boolean connected;
     private BufferedReader in;
     private PrintWriter out;
+    private ServerEvents state;
     private Game currentGame;
+
+    private Semaphore semaphore;
 
     public Player(Socket socket,BufferedReader in, Lobby lobby) {
         this.socket = socket;
@@ -29,6 +33,7 @@ public class Player implements Runnable {
             connected = false;
             e.printStackTrace();
         }
+        this.semaphore = new Semaphore(1);
     }
 
     public void run() {
@@ -46,6 +51,7 @@ public class Player implements Runnable {
                             lobby.addPlayerToLobby(this);
                             this.sendLobbyStatus();
 //                            TODO: same name error
+                            state = ServerEvents.LOBBY;
                             break;
                         case JOIN:
                             int roomNumber = message.getLobbyNumber();
@@ -55,22 +61,28 @@ public class Player implements Runnable {
                             if (currentGame != null){
                                 System.out.println(this.name + " added to a game");
                                 this.sendGameStatus(opponent);
+                                state = ServerEvents.GAME;
                             } else {
                                 this.sendError("room full");
 //                                TODO: Send Error
                             }
                             break;
                         case START:
+                            state = ServerEvents.STARTED;
                             break;
                         case MOVE:
+                            state = ServerEvents.MAKE_MOVE;
                             break;
                         case RESTART:
+                            state = ServerEvents.STARTED;
                             break;
                         case EXIT_GAME:
+                            state = ServerEvents.LOBBY;
                             break;
                         case DISCONNECT:
                             connected = false;
                             lobby.disconnectPlayer(this);
+
                             break;
                     }
                 }
@@ -133,5 +145,19 @@ public class Player implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Move requestMove() {
+
+
+        try {
+            this.semaphore.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public void announceWinner() {
     }
 }

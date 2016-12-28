@@ -52,7 +52,7 @@ Some name/value pairs are not required in every message. The table below shows w
                         "opponent"    : ([a-z][0-9])*
                         }]
     "first player" : true | false
-    "reason" : "[a-z]*" (why the error happened e.g. time out)
+    "reason" : "time elapsed" | "game full" | "missing keys" | "no such lobby" | "invalid move" | "lobby entry denied"
     "message" : any string explaining the message, for debugging purposes
 
 }
@@ -60,7 +60,7 @@ Some name/value pairs are not required in every message. The table below shows w
 
 ```
 
-The replies from the server do not happen synchronously every time, e.g. time out can occur anytime. This must be handled by the client correctly.
+The replies from the server do not happen synchronously every time, e.g. time error can occur anytime. This must be handled by the client correctly.
 Just like the client messages, the server sends messages and not all name/value pairs are present every time. Below in the table is what a client can expect.
 
 | Event | Message |
@@ -89,7 +89,7 @@ Just like the client messages, the server sends messages and not all name/value 
  Timeouts happen in any state of a player, below is the table for approximate timeouts for each state.
 
 
- | State | Timeout | Action by server |
+ | State | Maximum | Action by server |
  | ----- | ------- | ---------------- |
  | Lobby | 300 s | Disconnected client |
  | Game | 60 s | Put into the lobby |

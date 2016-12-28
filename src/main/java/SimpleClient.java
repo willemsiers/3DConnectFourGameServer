@@ -19,7 +19,7 @@ public class SimpleClient {
 
 
         try {
-            Socket socket = new Socket("192.168.1.11",8080);
+            Socket socket = new Socket(InetAddress.getLocalHost(),8080);
             DataInputStream in = new DataInputStream(socket.getInputStream());
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             PrintWriter out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
