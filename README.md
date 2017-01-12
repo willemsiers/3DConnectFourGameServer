@@ -44,8 +44,9 @@ Some name/value pairs are not required in every message. The table below shows w
 ```
 
 {
-    "event" : "lobby" | "game" | "started" | "make move" | "move denied" | "opponent moved" | "won" | "lost" | "error"
+    "event" : "lobby" | "game" | "started" | "make move" | "opponent moved" | "game over" | "error"
     "move" : "[a-d][1-4]"
+    "winner" : "you" | "opponent" | "draw"
     "opponent" :  ([a-z][0-9])*
     "free lobbies" : [{
                         "room number" : [0-99]
@@ -69,11 +70,10 @@ Just like the client messages, the server sends messages and not all name/value 
 | Placed in a game | event:game, opponent, message|
 | Game has started | event:started, first player, message|
 | Make move |  event:make move, message |
-| Move denied | event:move denied, move,  message|
 | Opponent moved | event:opponent moved, move, message |
-| You won the game | event:won, message|
-| You lost the game | event:lost, message |
+| Game over | event:game over,winner,  message|
 | Server Error | event:error, reason, message|
+| Invalid Move | event:error, move, reason, message|
 
 
 ## Server properties

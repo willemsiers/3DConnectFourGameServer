@@ -7,7 +7,7 @@ import org.json.simple.parser.ParseException;
  */
 public class ClientMessage  {
     private ClientAction action;
-    private Move move;
+    private String move;
     private int lobbyNumber;
     private String name;
 
@@ -40,7 +40,7 @@ public class ClientMessage  {
                 case MOVE:
                     Object moveString = ((JSONObject)obj).get("move");
                     if (moveString != null){
-                        move = new Move((String)moveString);
+                        move = (String)moveString;
                         break;
                     } else {
                         throw new WrongMessageException();
@@ -65,7 +65,7 @@ public class ClientMessage  {
         return action;
     }
 
-    public Move getMove() {
+    public String getMove() {
         return move;
     }
 

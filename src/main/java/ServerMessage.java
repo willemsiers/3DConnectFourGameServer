@@ -40,4 +40,28 @@ public class ServerMessage {
         return obj.toJSONString();
     }
 
+    public static String sendMakeMove(){
+        JSONObject obj = new JSONObject();
+        obj.put("event", "make move");
+        obj.put("message", "make move message");
+        return obj.toJSONString();
+    }
+
+    public static String sendOpponentMoved(String move){
+        JSONObject obj = new JSONObject();
+        obj.put("event", "opponent moved");
+        obj.put("move", move);
+        obj.put("message", "opponent moved message");
+        return obj.toJSONString();
+    }
+
+    public static String sendGameOver(String winner){
+        JSONObject obj = new JSONObject();
+        obj.put("event", "game over");
+        obj.put("winner", winner);
+        obj.put("message", "lost message");
+        return obj.toJSONString();
+    }
+
+
 }

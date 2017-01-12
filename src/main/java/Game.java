@@ -3,7 +3,7 @@ import java.util.List;
 /**
  * Created by Rogier on 16-12-16 in Enschede.
  */
-public class Game {
+public class Game implements Runnable {
     private Player player1;
 
     private Player player2;
@@ -12,44 +12,81 @@ public class Game {
 
     private Board board;
 
+    private boolean started;
+
     private int firstMove;
+
 
     public int numberOfPlayers(){
         return (player1 != null ? 1 : 0) + (player2 != null ? 1 : 0);
+    }
+
+    public boolean start(){
+        return (player1 != null && player1.getState() == ServerEvents.STARTED) &&
+                (player2 != null && player2.getState() == ServerEvents.STARTED);
     }
 
 
     public void init(){
         board = new Board();
         firstMove = (int)Math.round(Math.random());
+
     }
 
 
     public void run(){
+        while(!start()){
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        this.init();
+        started = true;
+        Move lastMove;
         int turn;
         if (firstMove == 0){
             turn = 0;
-            Move move = player1.requestMove();
-            this.makeMove(move,turn);
+            Move move = new Move(player1.requestMove(), GridMark.RED);
+            this.makeMove(move);
+            lastMove = move;
+            player2.sendOpponentMoved(lastMove.toString());
         } else {
             turn = 1;
-            Move move = player2.requestMove();
-            this.makeMove(move,turn);
+            Move move = new Move(player2.requestMove(),GridMark.YELLOW);
+            this.makeMove(move);
+            lastMove = move;
+            player1.sendOpponentMoved(lastMove.toString());
         }
 
-        while (!board.hasWinner()){
+        while (!board.hasWinner(lastMove) || !board.draw()){
             turn = (turn + 1) % 2;
             if (turn == 0){
-                Move move = player1.requestMove();
-                this.makeMove(move,turn);
+                Move move = new Move(player1.requestMove(), GridMark.RED);
+                this.makeMove(move);
+                lastMove = move;
+                player2.sendOpponentMoved(lastMove.toString());
             } else {
-                Move move = player2.requestMove();
-                this.makeMove(move,turn);
+                Move move = new Move(player2.requestMove(),GridMark.YELLOW);
+                this.makeMove(move);
+                lastMove = move;
+                player1.sendOpponentMoved(lastMove.toString());
+            }
+        }
+        if (board.draw()) {
+            player1.announceWinner("Draw");
+            player2.announceWinner("Draw");
+        } else {
+            if (turn == 0){
+                player1.announceWinner("you");
+                player2.announceWinner("opponent");
+            } else {
+                player1.announceWinner("opponent");
+                player2.announceWinner("you");
             }
         }
 
-        player1.announceWinner();
-        player2.announceWinner();
 
 
     }
@@ -83,16 +120,27 @@ public class Game {
         return player2;
     }
 
-    public void makeMove(Move move,int turn){
+    public Player otherPlayer(Player player){
+        return player1 == player ? player2 : player1;
+    }
+
+    public boolean isStarted() {
+        return started;
+    }
+
+    public void makeMove(Move move){
         boolean valid = board.isValidMove(move);
-        if (turn == 0){
-            board.makeMove(move,GridMark.RED);
+        if (valid){
+            board.makeMove(move);
+
+            moveList.add(move);
         } else {
-            board.makeMove(move,GridMark.YELLOW);
+
         }
 
-        moveList.add(move);
 //        TODO: Bad move
     }
+
+
 }
 

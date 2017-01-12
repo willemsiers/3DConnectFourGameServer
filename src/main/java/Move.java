@@ -1,17 +1,20 @@
 /**
  * Created by Rogier on 16-12-16 in Enschede.
  */
-public class Move {
+public final class Move {
+    private GridMark mark;
     private int y;
     private int x;
+    private int z;
 
 
-    public Move(String moveString) {
+    public Move(String moveString, GridMark mark) {
     }
 
-    public Move(int x, int y){
+    public Move(int x, int y, GridMark mark){
         this.x = x;
         this.y = y;
+        this.mark = mark;
     }
 
 
@@ -21,6 +24,18 @@ public class Move {
 
     public int getX() {
         return x;
+    }
+
+    public void setZ(int z){
+        this.z = z;
+    }
+
+    public int getZ(){
+        return z;
+    }
+
+    public GridMark getMark() {
+        return mark;
     }
 
     @Override

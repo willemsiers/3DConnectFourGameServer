@@ -19,6 +19,7 @@ public class Player implements Runnable {
     private PrintWriter out;
     private ServerEvents state;
     private Game currentGame;
+    private ClientMessage lastMessage;
 
     private Semaphore semaphore;
 
@@ -43,18 +44,18 @@ public class Player implements Runnable {
             try {
                 while ((userInput = in.readLine()) != null && isConnected()) {
                     System.out.println(userInput);
-                    ClientMessage message = new ClientMessage(userInput);
-                    switch (message.getAction()){
+                    lastMessage = new ClientMessage(userInput);
+                    switch (lastMessage.getAction()){
                         case CONNECT:
-                            System.out.println("Player connected: " + message.getName());
-                            this.name = message.getName();
+                            System.out.println("Player connected: " + lastMessage.getName());
+                            this.name = lastMessage.getName();
                             lobby.addPlayerToLobby(this);
                             this.sendLobbyStatus();
 //                            TODO: same name error
                             state = ServerEvents.LOBBY;
                             break;
                         case JOIN:
-                            int roomNumber = message.getLobbyNumber();
+                            int roomNumber = lastMessage.getLobbyNumber();
                             String opponent = lobby.getOpponentName(roomNumber);
                             currentGame = lobby.addPlayerToRoom(this,roomNumber);
 
@@ -72,6 +73,7 @@ public class Player implements Runnable {
                             break;
                         case MOVE:
                             state = ServerEvents.MAKE_MOVE;
+
                             break;
                         case RESTART:
                             state = ServerEvents.STARTED;
@@ -125,39 +127,40 @@ public class Player implements Runnable {
         this.out.flush();
     }
 
-    public void sendError(String message){
+    private void sendError(String message){
         String json = ServerMessage.sendError(message);
+        this.out.println(json);
+        this.out.flush();
+    }
+
+    public void sendMoveRequest(){
+        String json = ServerMessage.sendMakeMove();
+        this.out.println(json);
+        this.out.flush();
+    }
+
+    public void sendOpponentMoved(String move){
+        String json = ServerMessage.sendOpponentMoved(move);
+        this.out.println(json);
+        this.out.flush();
+    }
+
+    public String requestMove() {
+        this.sendMoveRequest();
+
+
+        return lastMessage.getMove();
+    }
+
+    public void announceWinner(String winner) {
+        String json = ServerMessage.sendGameOver(winner);
         this.out.println(json);
         this.out.flush();
     }
 
 
 
-    public static void main(String[] args) {
-        Map<String, String> obj = new HashMap<String, String>();
-        obj.put("action", "connect");
-        obj.put("name", "Rogier");
-        JSONObject object = new JSONObject(obj);
-        BufferedReader reader = new BufferedReader(new StringReader(object.toJSONString()));
-        try {
-            System.out.println(reader.readLine());
-            System.out.println(reader.readLine());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public Move requestMove() {
-
-
-        try {
-            this.semaphore.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public void announceWinner() {
+    public ServerEvents getState() {
+        return state;
     }
 }
