@@ -12,17 +12,17 @@ import java.util.concurrent.locks.ReentrantLock;
 public class Lobby {
     private List<Game> games;
     private List<Thread> gameThreads;
-    private Map<Player,Integer> roomPlayers;
+    private Map<ServerPlayer, Integer> roomPlayers;
     private Lock lock;
 
-    private List<Player> lobbyPlayers;
+    private List<ServerPlayer> lobbyServerPlayers;
 
 
-    public Lobby() {
+    public Lobby(int gameAmount) {
         games = new ArrayList<>();
         gameThreads = new ArrayList<>();
-        this.makeGameRooms(5);
-        lobbyPlayers = new CopyOnWriteArrayList<>();
+        this.makeGameRooms(gameAmount);
+        lobbyServerPlayers = new CopyOnWriteArrayList<>();
         roomPlayers = new HashMap<>();
         lock = new ReentrantLock();
     }
@@ -34,12 +34,13 @@ public class Lobby {
             games.add(game);
             Thread thread = new Thread(game);
             thread.start();
+            System.out.println("Game " + games.indexOf(game) + " is running!");
             gameThreads.add(thread);
         }
     }
 
-    public void addPlayerToLobby(Player player){
-        lobbyPlayers.add(player);
+    public void addPlayerToLobby(ServerPlayer serverPlayer) {
+        lobbyServerPlayers.add(serverPlayer);
     }
 
 
@@ -62,52 +63,62 @@ public class Lobby {
         return games.get(roomNumber).getPlayer1Name();
     }
 
-    public Game addPlayerToRoom(Player player, int roomNumber){
+    public Game addPlayerToRoom(ServerPlayer serverPlayer, int roomNumber) {
         lock.lock();
         boolean roomFull = false;
         Game game = games.get(roomNumber);
         int numberOfPlayers = game.numberOfPlayers();
         if (numberOfPlayers == 0){
-            game.setPlayer1(player);
+            game.setPlayer1(serverPlayer);
         } else if (numberOfPlayers == 1) {
-            game.setPlayer2(player);
+            game.setPlayer2(serverPlayer);
         } else {
             roomFull = true;
         }
-        lobbyPlayers.remove(player);
+        lobbyServerPlayers.remove(serverPlayer);
         lock.unlock();
         if (roomFull){
-//            TODO: Room full exception
+            serverPlayer.sendGameFull();
             return null;
         } else {
-            roomPlayers.put(player,roomNumber);
+            roomPlayers.put(serverPlayer, roomNumber);
             return game;
         }
     }
 
-    public void disconnectPlayer(Player player){
+    public void disconnectPlayer(ServerPlayer serverPlayer) {
         lock.lock();
         for (Game game : games){
-            if (game.contains(player)){
-//                REMOVE FROM GAME
+            if (game.contains(serverPlayer)) {
+                this.exitGame(serverPlayer);
             }
         }
         lock.unlock();
-        if (lobbyPlayers.contains(player)){
-            lobbyPlayers.remove(player);
+        if (lobbyServerPlayers.contains(serverPlayer)) {
+            lobbyServerPlayers.remove(serverPlayer);
         }
+        System.out.println("ServerPlayer " + serverPlayer.getName() + " disconnected");
 
     }
 
-    public void exitGame(Player player){
-        Thread thread = gameThreads.get(roomPlayers.get(player));
+    public void exitGame(ServerPlayer serverPlayer) {
+        lock.lock();
+        int gameIndex = roomPlayers.get(serverPlayer);
+        Thread thread = gameThreads.get(gameIndex);
         thread.interrupt();
-        Game game = games.get(roomPlayers.get(player));
+        Game game = games.get(gameIndex);
         if (game.isStarted()){
-            game.otherPlayer(player).announceWinner(game.otherPlayer(player).getName());
+            game.otherPlayer(serverPlayer).announceWinner(game.otherPlayer(serverPlayer).getName());
+            if (game.otherPlayer(serverPlayer) instanceof ServerPlayer) {
+                roomPlayers.remove(game.otherPlayer(serverPlayer));
+            }
         }
-
-
+        roomPlayers.remove(serverPlayer);
+        game = new Game();
+        thread = new Thread(game);
+        games.set(gameIndex, game);
+        gameThreads.set(gameIndex, thread);
+        lock.unlock();
     }
 
 

@@ -1,5 +1,4 @@
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.ServerSocket;
@@ -15,14 +14,14 @@ public class Server implements Runnable {
 
     private boolean isStopped;
 
-    private List<Player> players;
+    private List<ServerPlayer> serverPlayers;
 
     private ServerSocket serverSocket;
 
 
     public Server(int port) {
-        players = new ArrayList<>();
-        lobby = new Lobby();
+        serverPlayers = new ArrayList<>();
+        lobby = new Lobby(10);
         try {
             serverSocket = new ServerSocket(port);
 
@@ -53,15 +52,15 @@ public class Server implements Runnable {
 
 
     public void processClient(Socket clientSocket){
-        Player player = null;
+        ServerPlayer serverPlayer = null;
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-            player = new Player(clientSocket,in,lobby);
+            serverPlayer = new ServerPlayer(clientSocket, in, lobby);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        players.add(player);
-        Thread t1 = new Thread(player);
+        serverPlayers.add(serverPlayer);
+        Thread t1 = new Thread(serverPlayer);
         t1.start();
     }
 

@@ -52,7 +52,7 @@ Some name/value pairs are not required in every message. The table below shows w
                         "room number" : [0-99]
                         "opponent"    : ([a-z][0-9])*
                         }]
-    "first player" : true | false
+    "first serverPlayer" : true | false
     "reason" : "time elapsed" | "game full" | "missing keys" | "no such lobby" | "invalid move" | "lobby entry denied"
     "message" : any string explaining the message, for debugging purposes
 
@@ -68,7 +68,7 @@ Just like the client messages, the server sends messages and not all name/value 
 | ----- | -------- |
 | Placed in the Lobby | event:lobby, free lobbies, message |
 | Placed in a game | event:game, opponent, message|
-| Game has started | event:started, first player, message|
+| Game has started | event:started, first serverPlayer, message|
 | Make move |  event:make move, message |
 | Opponent moved | event:opponent moved, move, message |
 | Game over | event:game over,winner,  message|
@@ -86,7 +86,7 @@ Just like the client messages, the server sends messages and not all name/value 
 
 ### Timeout
 
-TTimeouts happen in any state of a player, below is the table for approximate timeouts for each state.
+TTimeouts happen in any state of a serverPlayer, below is the table for approximate timeouts for each state.
 
 | State | Maximum | Action by server |
 | ----- | ------- | ---------------- |
