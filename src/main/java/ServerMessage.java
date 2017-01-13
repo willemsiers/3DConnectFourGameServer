@@ -64,11 +64,12 @@ public class ServerMessage {
     }
 
 
-    public static String sendGameStarted(String opponent) {
+    public static String sendGameStarted() {
         JSONObject obj = new JSONObject();
         obj.put("event", "started");
-        obj.put("opponent", opponent);
         obj.put("message", "game started message");
         return obj.toJSONString();
     }
+
+
 }

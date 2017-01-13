@@ -21,10 +21,9 @@ public class ServerPlayer implements Runnable, Player {
     private BufferedReader in;
     private PrintWriter out;
     private ServerEvents state;
-    private Game currentGame;
     private ClientMessage lastMessage;
     private Lock lock;
-    private Condition moveMessageReceived = lock.newCondition();
+    private Condition moveMessageReceived;
 
     public ServerPlayer(Socket socket, BufferedReader in, Lobby lobby) {
         this.socket = socket;
@@ -38,38 +37,22 @@ public class ServerPlayer implements Runnable, Player {
             e.printStackTrace();
         }
         this.lock = new ReentrantLock();
+        moveMessageReceived = lock.newCondition();
     }
 
     public void run() {
-
         while (isConnected()) {
             String userInput;
             try {
                 while ((userInput = in.readLine()) != null && isConnected()) {
-                    System.out.println(userInput);
+//                    System.out.println(userInput);
                     lastMessage = new ClientMessage(userInput);
                     switch (lastMessage.getAction()) {
                         case CONNECT:
-                            System.out.println("ServerPlayer connected: " + lastMessage.getName());
-                            this.name = lastMessage.getName();
-                            lobby.addPlayerToLobby(this);
-                            this.sendLobbyStatus();
-//                            TODO: same name error
-                            state = ServerEvents.LOBBY;
+                            this.connect();
                             break;
                         case JOIN:
-                            int roomNumber = lastMessage.getLobbyNumber();
-                            String opponent = lobby.getOpponentName(roomNumber);
-                            currentGame = lobby.addPlayerToRoom(this, roomNumber);
-
-                            if (currentGame != null) {
-                                System.out.println(this.name + " added to a game");
-                                this.sendGameStatus(opponent);
-                                state = ServerEvents.GAME;
-                            } else {
-                                this.sendError("room full");
-//                                TODO: Send Error
-                            }
+                            this.join();
                             break;
                         case START:
                             state = ServerEvents.STARTED;
@@ -89,16 +72,14 @@ public class ServerPlayer implements Runnable, Player {
                         case DISCONNECT:
                             connected = false;
                             lobby.disconnectPlayer(this);
-
                             break;
                     }
                 }
             } catch (IOException e) {
                 connected = false;
-                System.out.println("error");
             } catch (WrongMessageException e) {
                 System.out.println("Wrong message received");
-//                                TODO: Send Error
+                this.sendError("missing keys");
             }
         }
 
@@ -107,6 +88,31 @@ public class ServerPlayer implements Runnable, Player {
             System.out.println("Closed");
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void connect() {
+        System.out.println("ServerPlayer connected: " + lastMessage.getName());
+        this.name = lastMessage.getName();
+        boolean validName = lobby.addPlayerToLobby(this);
+        if (validName) {
+            this.sendLobbyStatus();
+            state = ServerEvents.LOBBY;
+        } else {
+            this.sendError("lobby entry denied");
+        }
+    }
+
+    private void join() {
+        int roomNumber = lastMessage.getLobbyNumber();
+        String opponent = lobby.getOpponentName(roomNumber);
+        boolean validGame = lobby.addPlayerToRoom(this, roomNumber);
+        if (validGame) {
+            System.out.println(this.name + " added to a game");
+            this.sendGameStatus(opponent);
+            state = ServerEvents.GAME;
+        } else {
+            this.sendError("game full");
         }
     }
 
@@ -121,48 +127,54 @@ public class ServerPlayer implements Runnable, Player {
 
     public void sendLobbyStatus() {
         String json = ServerMessage.sendLobbyStatus(lobby.getFreeRooms());
-        this.out.println(json);
-        this.out.flush();
+        this.sendMessageToClient(json);
     }
 
     public void sendGameStatus(String opponent) {
         String json = ServerMessage.sendGameStatus(opponent);
-        this.out.println(json);
-        this.out.flush();
+        this.sendMessageToClient(json);
     }
 
     private void sendError(String message) {
         String json = ServerMessage.sendError(message);
-        this.out.println(json);
-        this.out.flush();
+        this.sendMessageToClient(json);
     }
 
     public void sendMoveRequest() {
         String json = ServerMessage.sendMakeMove();
-        this.out.println(json);
-        this.out.flush();
+        this.sendMessageToClient(json);
     }
 
     public void sendOpponentMoved(String move) {
         String json = ServerMessage.sendOpponentMoved(move);
-        this.out.println(json);
-        this.out.flush();
+        this.sendMessageToClient(json);
     }
 
-    public void sendGameStarted(String opponent) {
-        String json = ServerMessage.sendGameStarted(opponent);
-        this.out.println(json);
-        this.out.flush();
+    public void sendGameStarted() {
+        String json = ServerMessage.sendGameStarted();
+        this.sendMessageToClient(json);
     }
 
-    public void sendGameFull() {
-        String json = ServerMessage.sendError("game full");
+    private void sendMessageToClient(String json) {
         this.out.println(json);
         this.out.flush();
     }
 
     public String requestMove() {
         lock.lock();
+        this.sendMoveRequest();
+        try {
+            moveMessageReceived.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        lock.unlock();
+        return lastMessage.getMove();
+    }
+
+    public String moveDenied() {
+        lock.lock();
+        this.sendError("move denied");
         this.sendMoveRequest();
         try {
             moveMessageReceived.await();
@@ -183,7 +195,4 @@ public class ServerPlayer implements Runnable, Player {
         return state == ServerEvents.STARTED;
     }
 
-    public ServerEvents getState() {
-        return state;
-    }
 }

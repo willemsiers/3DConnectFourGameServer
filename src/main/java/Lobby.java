@@ -15,14 +15,13 @@ public class Lobby {
     private Map<ServerPlayer, Integer> roomPlayers;
     private Lock lock;
 
-    private List<ServerPlayer> lobbyServerPlayers;
-
+    private List<ServerPlayer> serverPlayers;
 
     public Lobby(int gameAmount) {
         games = new ArrayList<>();
         gameThreads = new ArrayList<>();
         this.makeGameRooms(gameAmount);
-        lobbyServerPlayers = new CopyOnWriteArrayList<>();
+        serverPlayers = new CopyOnWriteArrayList<>();
         roomPlayers = new HashMap<>();
         lock = new ReentrantLock();
     }
@@ -39,8 +38,17 @@ public class Lobby {
         }
     }
 
-    public void addPlayerToLobby(ServerPlayer serverPlayer) {
-        lobbyServerPlayers.add(serverPlayer);
+    public boolean addPlayerToLobby(ServerPlayer serverPlayer) {
+        lock.lock();
+        for (Player player : serverPlayers) {
+            if (player.getName().equals(serverPlayer.getName())) {
+                lock.unlock();
+                return false;
+            }
+        }
+        serverPlayers.add(serverPlayer);
+        lock.unlock();
+        return true;
     }
 
 
@@ -49,11 +57,7 @@ public class Lobby {
         List<String> result = new ArrayList<>();
 
         for (Game game : games){
-            if (game.numberOfPlayers() == 0){
-                result.add("No players yet");
-            } else if (game.numberOfPlayers() == 1){
-                result.add(game.getPlayer1Name());
-            }
+            result.add(game.getPlayer1Name());
         }
         lock.unlock();
         return result;
@@ -63,7 +67,7 @@ public class Lobby {
         return games.get(roomNumber).getPlayer1Name();
     }
 
-    public Game addPlayerToRoom(ServerPlayer serverPlayer, int roomNumber) {
+    public boolean addPlayerToRoom(ServerPlayer serverPlayer, int roomNumber) {
         lock.lock();
         boolean roomFull = false;
         Game game = games.get(roomNumber);
@@ -75,14 +79,12 @@ public class Lobby {
         } else {
             roomFull = true;
         }
-        lobbyServerPlayers.remove(serverPlayer);
         lock.unlock();
         if (roomFull){
-            serverPlayer.sendGameFull();
-            return null;
+            return false;
         } else {
             roomPlayers.put(serverPlayer, roomNumber);
-            return game;
+            return true;
         }
     }
 
@@ -94,8 +96,8 @@ public class Lobby {
             }
         }
         lock.unlock();
-        if (lobbyServerPlayers.contains(serverPlayer)) {
-            lobbyServerPlayers.remove(serverPlayer);
+        if (serverPlayers.contains(serverPlayer)) {
+            serverPlayers.remove(serverPlayer);
         }
         System.out.println("ServerPlayer " + serverPlayer.getName() + " disconnected");
 

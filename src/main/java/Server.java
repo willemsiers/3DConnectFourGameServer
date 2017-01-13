@@ -14,13 +14,11 @@ public class Server implements Runnable {
 
     private boolean isStopped;
 
-    private List<ServerPlayer> serverPlayers;
 
     private ServerSocket serverSocket;
 
 
     public Server(int port) {
-        serverPlayers = new ArrayList<>();
         lobby = new Lobby(10);
         try {
             serverSocket = new ServerSocket(port);
@@ -59,7 +57,6 @@ public class Server implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        serverPlayers.add(serverPlayer);
         Thread t1 = new Thread(serverPlayer);
         t1.start();
     }

@@ -30,16 +30,17 @@ public class Game implements Runnable {
         firstMove = (int)Math.round(Math.random());
         player1 = null;
         player2 = null;
+        started = true;
     }
 
 
     public void run(){
         while (true) {
             this.waitForAllPlayers();
-            player1.sendGameStarted(player2.getName());
-            player2.sendGameStarted(player1.getName());
+            player1.sendGameStarted();
+            player2.sendGameStarted();
+            System.out.println("A game has been started");
             this.init();
-            started = true;
             Move lastMove;
             int turn = firstMove;
             if (firstMove == 0) {
@@ -47,7 +48,7 @@ public class Game implements Runnable {
             } else {
                 lastMove = player2Move();
             }
-            while (!board.hasWinner(lastMove) || !board.draw()) {
+            while (!board.gameOver(lastMove)) {
                 turn = (turn + 1) % 2;
                 if (turn == 0) {
                     lastMove = this.player1Move();
@@ -65,6 +66,7 @@ public class Game implements Runnable {
 
 
         }
+
     }
 
     public void waitForAllPlayers() {
@@ -72,13 +74,16 @@ public class Game implements Runnable {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                System.out.println("Game interrupted");
             }
         }
     }
 
     public Move player1Move() {
         Move move = new Move(player1.requestMove(), GridMark.RED);
+        while (!board.isValidMove(move)) {
+            move = new Move(player1.moveDenied(), GridMark.RED);
+        }
         this.makeMove(move);
         player2.sendOpponentMoved(move.toString());
         return move;
@@ -86,6 +91,9 @@ public class Game implements Runnable {
 
     public Move player2Move() {
         Move move = new Move(player2.requestMove(), GridMark.YELLOW);
+        while (!board.isValidMove(move)) {
+            move = new Move(player2.moveDenied(), GridMark.YELLOW);
+        }
         this.makeMove(move);
         player1.sendOpponentMoved(move.toString());
         return move;
@@ -124,15 +132,7 @@ public class Game implements Runnable {
 
 
     public void makeMove(Move move){
-        boolean valid = board.isValidMove(move);
-        if (valid){
-            board.makeMove(move);
-//            moveList.add(move);
-        } else {
-
-        }
-
-//        TODO: Bad move
+        board.makeMove(move);
     }
 
 

@@ -133,13 +133,7 @@ public class Board {
 
     }
 
-    public boolean hasWinner(Move move) {
-        return isWinner(move);
-    }
-
-
-
-    public final boolean isWinner(Move move) {
+    private final boolean isWinner(Move move) {
         final GridMark color = move.getMark();
         final int[] origin = new int[]{move.getX(), move.getY(), move.getZ()};
         for (int[][] axis : axes) {
@@ -197,6 +191,11 @@ public class Board {
             }
         }
         return result;
+    }
+
+    public boolean gameOver(Move move) {
+        return draw() || isWinner(move);
+
     }
 
 

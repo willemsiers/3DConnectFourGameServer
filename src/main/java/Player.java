@@ -9,10 +9,11 @@ public interface Player {
 
     void sendOpponentMoved(String move);
 
-    void sendGameStarted(String opponent);
+    void sendGameStarted();
 
     String requestMove();
 
     void announceWinner(String winner);
 
+    String moveDenied();
 }
