@@ -1,6 +1,6 @@
 # 3D Connect Four game.Game GameServer
 Updated: 16-12-2016
-Version: 0.3.1
+Version: 0.3.3
 
 
 ## Usage
@@ -67,7 +67,7 @@ Just like the client messages, the server sends messages and not all name/value 
 | ----- | -------- |
 | Placed in the server.Lobby | event:lobby, free lobbies, message |
 | Placed in a game | event:game, opponent, message|
-| Game has started | event:started, message|
+| Game has started | event:started, opponent, message|
 | Make move |  event:make move, message |
 | Opponent moved | event:opponent moved, move, message |
 | Game over | event:game over,winner,  message|
@@ -79,9 +79,13 @@ Just like the client messages, the server sends messages and not all name/value 
 
 ### Connecting
 
-### server.Lobby
+### Lobby
 
-### game.Game
+### Game
+Concerning moves:
+a-z is for the y-axis.
+0-3 is for the x-axis.
+
 When a move is successful, the next message will be an "opponent moved" message or a "game over" message.
 
 When a move is denied, two messages will be send. First an error message will be send. Then another "make move" message is send.
@@ -93,7 +97,7 @@ Timeouts happen in any state of a serverPlayer, below is the table for approxima
 
 | State | Maximum | Action by server |
 | ----- | ------- | ---------------- |
-| server.Lobby | 600 s | Disconnected client |
+| Lobby | 600 s | Disconnected client |
 | Game | 180 s | Put into the lobby |
 | Make move | 15 s| Random move made for this client, opponents' turn |
 | End of game | 180 s | Put into the lobby |

@@ -1,7 +1,6 @@
 import server.Lobby;
 import server.ServerPlayer;
 
-import javax.servlet.http.HttpServlet;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -11,7 +10,7 @@ import java.net.Socket;
 /**
  * Created by Rogier on 16-12-16 in Enschede.
  */
-public class GameServer extends HttpServlet implements Runnable {
+public class GameServer implements Runnable {
     private Lobby lobby;
 
     private boolean isStopped;
@@ -40,8 +39,6 @@ public class GameServer extends HttpServlet implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-
         }
     }
 

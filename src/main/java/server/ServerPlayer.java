@@ -107,7 +107,7 @@ public class ServerPlayer implements Runnable, Player {
         if (validName) {
             this.sendLobbyStatus();
             state = ServerEvents.LOBBY;
-            System.out.println("server.ServerPlayer connected: " + lastMessage.getName());
+            System.out.println("Player connected: " + lastMessage.getName());
         } else {
             this.sendError("lobby entry denied", "name or IP is already used or invalid characters");
             try {

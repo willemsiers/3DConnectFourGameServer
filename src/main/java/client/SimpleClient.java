@@ -63,8 +63,8 @@ public class SimpleClient implements Runnable {
 
 
     public void run() {
-        String name = getUserInput("Enter your name");
-
+//        String name = getUserInput("Enter your name");
+        String name = "Rogier" + ((int) (Math.random() * 1000));
         this.connect(name);
         JSONObject object = getServerMessage();
 
@@ -127,13 +127,17 @@ public class SimpleClient implements Runnable {
             if (type == MessageType.OPPONENT_MOVED) {
                 clientGame.enterMove(object.get("move").toString());
             } else {
-                System.out.println("impossible 1");
+                System.out.println("impossible 1: " + type);
             }
 
             object = getServerMessage();
             type = MessageType.fromString(object.get("event").toString(), "");
 
-
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if (type == MessageType.GAME_OVER) {
                 break;
             } else if (type == MessageType.MOVE) {
