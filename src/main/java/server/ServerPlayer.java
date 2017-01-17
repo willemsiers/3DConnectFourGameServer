@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.locks.Condition;
@@ -83,7 +84,7 @@ public class ServerPlayer implements Runnable, Player {
                 connected = false;
             } catch (WrongMessageException e) {
                 System.out.println("Wrong message received");
-                this.sendError("missing keys");
+                this.sendError("missing keys", "invalid keys used");
             }
         }
 
@@ -99,14 +100,21 @@ public class ServerPlayer implements Runnable, Player {
         if (state != ServerEvents.DISCONNECTED) {
             throw new WrongMessageException();
         }
-        System.out.println("server.ServerPlayer connected: " + lastMessage.getName());
+
+
         this.name = lastMessage.getName();
         boolean validName = lobby.addPlayerToLobby(this);
         if (validName) {
             this.sendLobbyStatus();
             state = ServerEvents.LOBBY;
+            System.out.println("server.ServerPlayer connected: " + lastMessage.getName());
         } else {
-            this.sendError("lobby entry denied");
+            this.sendError("lobby entry denied", "name or IP is already used or invalid characters");
+            try {
+                this.socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -122,7 +130,7 @@ public class ServerPlayer implements Runnable, Player {
             this.sendGameStatus(opponent);
             state = ServerEvents.GAME;
         } else {
-            this.sendError("game full");
+            this.sendError("game full", "the game is full at the moment");
         }
     }
 
@@ -145,8 +153,8 @@ public class ServerPlayer implements Runnable, Player {
         this.sendMessageToClient(json);
     }
 
-    private void sendError(String message) {
-        String json = ServerMessage.sendError(message);
+    private void sendError(String reason, String message) {
+        String json = ServerMessage.sendError(reason, message);
         this.sendMessageToClient(json);
     }
 
@@ -185,7 +193,7 @@ public class ServerPlayer implements Runnable, Player {
 
     public String moveDenied() {
         lock.lock();
-        this.sendError("move denied");
+        this.sendError("move denied", "the move was not permitted");
         this.sendMoveRequest();
         try {
             moveMessageReceived.await();
@@ -200,6 +208,10 @@ public class ServerPlayer implements Runnable, Player {
         String json = ServerMessage.sendGameOver(winner);
         this.out.println(json);
         this.out.flush();
+    }
+
+    public InetAddress getInetAddress() {
+        return socket.getInetAddress();
     }
 
     public boolean wantsToStart() {

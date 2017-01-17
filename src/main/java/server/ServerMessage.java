@@ -35,11 +35,11 @@ public class ServerMessage {
     }
 
 
-    public static String sendError(String reason){
+    public static String sendError(String reason, String message) {
         JSONObject obj = new JSONObject();
-        obj.put("event", "game");
+        obj.put("event", "error");
         obj.put("reason", reason);
-        obj.put("message", "error message");
+        obj.put("message", message);
         return obj.toJSONString();
     }
 

@@ -4,6 +4,8 @@ import game.Game;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,10 +49,17 @@ public class Lobby {
 
     public boolean addPlayerToLobby(ServerPlayer serverPlayer) {
         lock.lock();
-        for (Player player : serverPlayers) {
+        for (ServerPlayer player : serverPlayers) {
             if (player.getName().equals(serverPlayer.getName())) {
                 lock.unlock();
                 return false;
+            } else try {
+                if (player.getInetAddress().equals(serverPlayer.getInetAddress()) && !player.getInetAddress().equals(InetAddress.getLocalHost())) {
+                    lock.unlock();
+                    return false;
+                }
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
             }
         }
         serverPlayers.add(serverPlayer);

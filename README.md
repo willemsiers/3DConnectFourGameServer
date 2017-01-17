@@ -33,7 +33,7 @@ Some name/value pairs are not required in every message. The table below shows w
 | Connect       | action:connect, name      |
 | Join game     | action:join, room number |
 | Start game    | action:start              |
-| game.Move          | action:move, move         |
+| Move          | action:move, move         |
 | Resign        | action:resign             |
 | Restart       | action:restart            |
 | Exit game     | action:exit game          |
@@ -67,12 +67,12 @@ Just like the client messages, the server sends messages and not all name/value 
 | ----- | -------- |
 | Placed in the server.Lobby | event:lobby, free lobbies, message |
 | Placed in a game | event:game, opponent, message|
-| game.Game has started | event:started, message|
+| Game has started | event:started, message|
 | Make move |  event:make move, message |
 | Opponent moved | event:opponent moved, move, message |
-| game.Game over | event:game over,winner,  message|
-| GameServer Error | event:error, reason, message|
-| Invalid game.Move | event:error, move, reason, message|
+| Game over | event:game over,winner,  message|
+| Server Error | event:error, reason, message|
+| Invalid Move | event:error, move, reason, message|
 
 
 ## GameServer properties
@@ -94,7 +94,7 @@ Timeouts happen in any state of a serverPlayer, below is the table for approxima
 | State | Maximum | Action by server |
 | ----- | ------- | ---------------- |
 | server.Lobby | 600 s | Disconnected client |
-| game.Game | 180 s | Put into the lobby |
+| Game | 180 s | Put into the lobby |
 | Make move | 15 s| Random move made for this client, opponents' turn |
 | End of game | 180 s | Put into the lobby |
 

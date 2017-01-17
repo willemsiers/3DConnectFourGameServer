@@ -5,12 +5,12 @@
          version="3.1">
     <display-name>3D Connect 4 game.Game Server</display-name>
     <servlet>
-        <servlet-name>GameServer</servlet-name>
-        <servlet-class>GameServer</servlet-class>
+        <servlet-name>GameServlet</servlet-name>
+        <servlet-class>GameServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>GameServer</servlet-name>
+        <servlet-name>GameServlet</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
 

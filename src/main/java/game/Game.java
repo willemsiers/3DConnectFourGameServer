@@ -42,17 +42,19 @@ public class Game implements Runnable {
         firstMove = (int)Math.round(Math.random());
         player1 = null;
         player2 = null;
-        started = true;
+
     }
 
 
     public void run(){
         while (true) {
+            this.init();
             this.waitForAllPlayers();
             player1.sendGameStarted();
             player2.sendGameStarted();
             System.out.println("A game has been started");
-            this.init();
+
+            started = true;
             Move lastMove;
             int turn = firstMove;
             if (firstMove == 0) {
@@ -73,6 +75,7 @@ public class Game implements Runnable {
                 player1.announceWinner("draw");
                 player2.announceWinner("draw");
             } else {
+                System.out.println(board.toString());
                 winner = turn == 0 ? player1.getName() : player2.getName();
                 player1.announceWinner(turn == 0 ? "you" : "opponent");
                 player2.announceWinner(turn == 0 ? "opponent" : "you");
@@ -115,11 +118,11 @@ public class Game implements Runnable {
 
 
     public String getPlayer1Name(){
-        return player1 != null ? player1.getName() : "No opponent yet";
+        return player1 != null ? player1.getName() : "No player1 yet";
     }
 
     public String getPlayer2Name(){
-        return player2 != null ? player2.getName() : "No opponent yet";
+        return player2 != null ? player2.getName() : "No player2 yet";
     }
 
     public Board getBoard() {

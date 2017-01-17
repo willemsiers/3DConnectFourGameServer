@@ -11,6 +11,17 @@ public final class Move {
 
 
     public Move(String moveString, GridMark mark) {
+        this.mark = mark;
+        x = Character.getNumericValue(moveString.charAt(1));
+        if (moveString.charAt(0) == 'a') {
+            y = 0;
+        } else if (moveString.charAt(0) == 'b') {
+            y = 1;
+        } else if (moveString.charAt(0) == 'c') {
+            y = 2;
+        } else if (moveString.charAt(0) == 'd') {
+            y = 3;
+        }
     }
 
     public Move(int x, int y, GridMark mark){
