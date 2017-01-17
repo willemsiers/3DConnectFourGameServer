@@ -3,7 +3,7 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
-    <display-name>3D Connect 4 Game Server</display-name>
+    <display-name>3D Connect 4 game.Game Server</display-name>
     <servlet>
         <servlet-name>GameServer</servlet-name>
         <servlet-class>GameServer</servlet-class>

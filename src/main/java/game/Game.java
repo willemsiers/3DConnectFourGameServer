@@ -1,3 +1,8 @@
+package game;
+
+import server.Player;
+import server.ServerPlayer;
+
 import java.util.List;
 
 /**
@@ -83,7 +88,7 @@ public class Game implements Runnable {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
-                System.out.println("Game interrupted");
+                System.out.println("game.Game interrupted");
             }
         }
     }

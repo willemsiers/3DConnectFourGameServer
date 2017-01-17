@@ -1,3 +1,6 @@
+import server.Lobby;
+import server.ServerPlayer;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;

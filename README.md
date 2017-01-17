@@ -1,6 +1,6 @@
-# 3D Connect Four Game GameServer
+# 3D Connect Four game.Game GameServer
 Updated: 16-12-2016
-Version: 0.2.2
+Version: 0.3.1
 
 
 ## Usage
@@ -33,7 +33,7 @@ Some name/value pairs are not required in every message. The table below shows w
 | Connect       | action:connect, name      |
 | Join game     | action:join, room number |
 | Start game    | action:start              |
-| Move          | action:move, move         |
+| game.Move          | action:move, move         |
 | Resign        | action:resign             |
 | Restart       | action:restart            |
 | Exit game     | action:exit game          |
@@ -65,23 +65,23 @@ Just like the client messages, the server sends messages and not all name/value 
 
 | Event | Message |
 | ----- | -------- |
-| Placed in the Lobby | event:lobby, free lobbies, message |
+| Placed in the server.Lobby | event:lobby, free lobbies, message |
 | Placed in a game | event:game, opponent, message|
-| Game has started | event:started, message|
+| game.Game has started | event:started, message|
 | Make move |  event:make move, message |
 | Opponent moved | event:opponent moved, move, message |
-| Game over | event:game over,winner,  message|
+| game.Game over | event:game over,winner,  message|
 | GameServer Error | event:error, reason, message|
-| Invalid Move | event:error, move, reason, message|
+| Invalid game.Move | event:error, move, reason, message|
 
 
 ## GameServer properties
 
 ### Connecting
 
-### Lobby
+### server.Lobby
 
-### Game
+### game.Game
 When a move is successful, the next message will be an "opponent moved" message or a "game over" message.
 
 When a move is denied, two messages will be send. First an error message will be send. Then another "make move" message is send.
@@ -93,8 +93,8 @@ Timeouts happen in any state of a serverPlayer, below is the table for approxima
 
 | State | Maximum | Action by server |
 | ----- | ------- | ---------------- |
-| Lobby | 600 s | Disconnected client |
-| Game | 180 s | Put into the lobby |
+| server.Lobby | 600 s | Disconnected client |
+| game.Game | 180 s | Put into the lobby |
 | Make move | 15 s| Random move made for this client, opponents' turn |
 | End of game | 180 s | Put into the lobby |
 

@@ -1,3 +1,5 @@
+package game;
+
 /**
  * Created by Rogier on 20-12-16 in Enschede.
  */

@@ -8,7 +8,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <title>3D Connect 4 Game Server</title>
+    <title>3D Connect 4 game.Game Server</title>
 </head>
 <body>
 Homepage

@@ -1,11 +1,11 @@
-import org.json.simple.JSONObject;
+package server;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -99,7 +99,7 @@ public class ServerPlayer implements Runnable, Player {
         if (state != ServerEvents.DISCONNECTED) {
             throw new WrongMessageException();
         }
-        System.out.println("ServerPlayer connected: " + lastMessage.getName());
+        System.out.println("server.ServerPlayer connected: " + lastMessage.getName());
         this.name = lastMessage.getName();
         boolean validName = lobby.addPlayerToLobby(this);
         if (validName) {

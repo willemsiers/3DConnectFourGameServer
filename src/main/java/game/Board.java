@@ -1,6 +1,8 @@
+package game;
+
 import org.json.simple.JSONArray;
 
-import java.util.*;
+import java.util.Arrays;
 
 /**
  * Created by Rogier on 16-12-16 in Enschede.

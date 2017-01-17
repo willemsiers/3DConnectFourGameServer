@@ -1,10 +1,10 @@
+package client;
+
 import org.json.simple.JSONObject;
 
 import java.io.*;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 
 /**

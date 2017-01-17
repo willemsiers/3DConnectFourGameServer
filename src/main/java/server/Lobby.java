@@ -1,7 +1,13 @@
+package server;
+
+import game.Game;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -34,7 +40,7 @@ public class Lobby {
             games.add(game);
             Thread thread = new Thread(game);
             thread.start();
-            System.out.println("Game " + games.indexOf(game) + " is running!");
+            System.out.println("game.Game " + games.indexOf(game) + " is running!");
             gameThreads.add(thread);
         }
     }
@@ -100,7 +106,7 @@ public class Lobby {
         if (serverPlayers.contains(serverPlayer)) {
             serverPlayers.remove(serverPlayer);
         }
-        System.out.println("ServerPlayer " + serverPlayer.getName() + " disconnected");
+        System.out.println("server.ServerPlayer " + serverPlayer.getName() + " disconnected");
 
     }
 
