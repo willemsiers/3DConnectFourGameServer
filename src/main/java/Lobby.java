@@ -1,7 +1,7 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -10,6 +10,7 @@ import java.util.concurrent.locks.ReentrantLock;
  * Created by Rogier on 16-12-16 in Enschede.
  */
 public class Lobby {
+
     private List<Game> games;
     private List<Thread> gameThreads;
     private Map<ServerPlayer, Integer> roomPlayers;
@@ -123,7 +124,36 @@ public class Lobby {
         lock.unlock();
     }
 
+    public String getGame(int id) {
+        JSONObject obj = new JSONObject();
+        if (id >= games.size()) {
+            return "Jammer joh1";
+        }
+        Game game = games.get(id);
+        obj.put("grid", game.getBoard().toJSONString());
+        obj.put("player1", game.getPlayer1Name());
+        obj.put("player2", game.getPlayer2Name());
+        obj.put("winner", game.getWinner());
+        obj.put("game number", id);
+        obj.put("winning move", null);
+        return obj.toJSONString();
+    }
+
+    public String getLobby() {
+        JSONArray array = new JSONArray();
+        lock.lock();
+        for (Game game : games) {
+            JSONObject object = new JSONObject();
+            object.put("game number ", games.indexOf(game));
+            object.put("player1", game.getPlayer1Name());
+            object.put("player2", game.getPlayer2Name());
+            array.add(object);
+        }
 
 
+        lock.unlock();
+
+        return array.toJSONString();
+    }
 
 }

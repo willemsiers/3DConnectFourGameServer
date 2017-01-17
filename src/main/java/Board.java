@@ -1,3 +1,5 @@
+import org.json.simple.JSONArray;
+
 import java.util.*;
 
 /**
@@ -67,7 +69,6 @@ public class Board {
     private static final int[][][] axes = new int[][][]{axis1, axis2, axis3, axis4, axis5, axis6, axis7, axis8, axis9, axis10, axis11, axis12, axis13};
 
 
-
     public static final int CONNECT = 4;
 
     public static final int GRID_SIZE_X = 4;
@@ -77,7 +78,7 @@ public class Board {
     //    grid [x][y][z]
     private GridMark[][][] grid;
 
-
+    private String[] winningMove;
 
 
     public Board() {
@@ -92,9 +93,6 @@ public class Board {
     }
 
 
-
-
-
     public static void main(String[] args) {
         Board board = new Board();
         Move move = new Move(4, 0,GridMark.RED);
@@ -102,10 +100,17 @@ public class Board {
         board.makeMove(new Move(0, 0,GridMark.RED));
         board.makeMove(new Move(0, 0,GridMark.RED));
         board.makeMove(new Move(0, 0,GridMark.RED));
+        board.makeMove(new Move(1, 2, GridMark.YELLOW));
         Move last = new Move(0, 0,GridMark.RED);
         board.makeMove(last);
         System.out.println("Winner? " + board.isWinner(last));
+        System.out.println(Arrays.deepToString(board.grid));
         System.out.println(board);
+
+    }
+
+    public GridMark[][][] getGrid() {
+        return grid;
     }
 
     public boolean isValidMove(Move move) {
@@ -133,7 +138,7 @@ public class Board {
 
     }
 
-    private final boolean isWinner(Move move) {
+    private boolean isWinner(Move move) {
         final GridMark color = move.getMark();
         final int[] origin = new int[]{move.getX(), move.getY(), move.getZ()};
         for (int[][] axis : axes) {
@@ -220,5 +225,20 @@ public class Board {
             result = result + " --- --- --- ---" + "\n";
         }
         return result;
+    }
+
+    public String toJSONString() {
+        JSONArray arr = new JSONArray();
+
+        for (int x = 0; x < GRID_SIZE_X; x++) {
+            JSONArray array = new JSONArray();
+            for (int y = 0; y < GRID_SIZE_Y; y++) {
+                JSONArray jsonArray = new JSONArray();
+                jsonArray.addAll(Arrays.asList(grid[x][y]).subList(0, GRID_SIZE_Z));
+                array.add(jsonArray);
+            }
+            arr.add(array);
+        }
+        return arr.toJSONString();
     }
 }

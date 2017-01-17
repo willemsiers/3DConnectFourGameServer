@@ -38,6 +38,7 @@ public class ServerPlayer implements Runnable, Player {
         }
         this.lock = new ReentrantLock();
         moveMessageReceived = lock.newCondition();
+        state = ServerEvents.DISCONNECTED;
     }
 
     public void run() {
@@ -55,10 +56,13 @@ public class ServerPlayer implements Runnable, Player {
                             this.join();
                             break;
                         case START:
+                            if (state != ServerEvents.GAME) {
+                                throw new WrongMessageException();
+                            }
                             state = ServerEvents.STARTED;
                             break;
                         case MOVE:
-                            state = ServerEvents.MAKE_MOVE;
+
                             lock.lock();
                             moveMessageReceived.signal();
                             lock.unlock();
@@ -91,7 +95,10 @@ public class ServerPlayer implements Runnable, Player {
         }
     }
 
-    private void connect() {
+    private void connect() throws WrongMessageException {
+        if (state != ServerEvents.DISCONNECTED) {
+            throw new WrongMessageException();
+        }
         System.out.println("ServerPlayer connected: " + lastMessage.getName());
         this.name = lastMessage.getName();
         boolean validName = lobby.addPlayerToLobby(this);
@@ -103,7 +110,10 @@ public class ServerPlayer implements Runnable, Player {
         }
     }
 
-    private void join() {
+    private void join() throws WrongMessageException {
+        if (state != ServerEvents.LOBBY) {
+            throw new WrongMessageException();
+        }
         int roomNumber = lastMessage.getLobbyNumber();
         String opponent = lobby.getOpponentName(roomNumber);
         boolean validGame = lobby.addPlayerToRoom(this, roomNumber);
@@ -162,6 +172,7 @@ public class ServerPlayer implements Runnable, Player {
 
     public String requestMove() {
         lock.lock();
+        state = ServerEvents.MAKE_MOVE;
         this.sendMoveRequest();
         try {
             moveMessageReceived.await();

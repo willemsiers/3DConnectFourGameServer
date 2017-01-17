@@ -1,3 +1,5 @@
+import java.util.List;
+
 /**
  * Created by Rogier on 16-12-16 in Enschede.
  */
@@ -6,7 +8,7 @@ public class Game implements Runnable {
 
     private Player player2;
 
-//    private List<Move> moveList;
+    private List<String> winningMove;
 
     private Board board;
 
@@ -14,6 +16,11 @@ public class Game implements Runnable {
 
     private int firstMove;
 
+    private String winner;
+
+    public Game() {
+        init();
+    }
 
     public int numberOfPlayers(){
         return (player1 != null ? 1 : 0) + (player2 != null ? 1 : 0);
@@ -57,9 +64,11 @@ public class Game implements Runnable {
                 }
             }
             if (board.draw()) {
+                winner = "draw";
                 player1.announceWinner("draw");
                 player2.announceWinner("draw");
             } else {
+                winner = turn == 0 ? player1.getName() : player2.getName();
                 player1.announceWinner(turn == 0 ? "you" : "opponent");
                 player2.announceWinner(turn == 0 ? "opponent" : "you");
             }
@@ -100,15 +109,17 @@ public class Game implements Runnable {
     }
 
 
-
     public String getPlayer1Name(){
         return player1 != null ? player1.getName() : "No opponent yet";
     }
 
     public String getPlayer2Name(){
-        return player2.getName();
+        return player2 != null ? player2.getName() : "No opponent yet";
     }
 
+    public Board getBoard() {
+        return board;
+    }
 
     public void setPlayer1(ServerPlayer player1) {
         this.player1 = player1;
@@ -130,6 +141,9 @@ public class Game implements Runnable {
         return started;
     }
 
+    public String getWinner() {
+        return winner != null ? winner : "No winner yet";
+    }
 
     public void makeMove(Move move){
         board.makeMove(move);

@@ -1,4 +1,4 @@
-# 3D Connect Four Game Server
+# 3D Connect Four Game GameServer
 Updated: 16-12-2016
 Version: 0.2.2
 
@@ -71,11 +71,11 @@ Just like the client messages, the server sends messages and not all name/value 
 | Make move |  event:make move, message |
 | Opponent moved | event:opponent moved, move, message |
 | Game over | event:game over,winner,  message|
-| Server Error | event:error, reason, message|
+| GameServer Error | event:error, reason, message|
 | Invalid Move | event:error, move, reason, message|
 
 
-## Server properties
+## GameServer properties
 
 ### Connecting
 
