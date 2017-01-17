@@ -1,6 +1,6 @@
 # 3D Connect Four game.Game GameServer
 Updated: 16-12-2016
-Version: 0.3.3
+Version: 0.3.4
 
 
 ## Usage
@@ -78,6 +78,13 @@ Just like the client messages, the server sends messages and not all name/value 
 ## GameServer properties
 
 ### Connecting
+Rules for the name:
+- "No player1 yet" is forbidden
+- Max 16 characters
+- Any character other than [A-Z][a-z][0-9] is forbidden.
+
+Players who not stick to the rules will not be allowed access onto the server.
+
 
 ### Lobby
 

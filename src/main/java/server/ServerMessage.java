@@ -67,9 +67,10 @@ public class ServerMessage {
     }
 
 
-    public static String sendGameStarted() {
+    public static String sendGameStarted(String opponentName) {
         JSONObject obj = new JSONObject();
         obj.put("event", "started");
+        obj.put("opponent", opponentName);
         obj.put("message", "game started message");
         return obj.toJSONString();
     }

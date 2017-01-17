@@ -43,52 +43,56 @@ public class ServerPlayer implements Runnable, Player {
     }
 
     public void run() {
-        while (isConnected()) {
-            String userInput;
-            try {
-                while ((userInput = in.readLine()) != null && isConnected()) {
-//                    System.out.println(userInput);
-                    lastMessage = new ClientMessage(userInput);
-                    switch (lastMessage.getAction()) {
-                        case CONNECT:
-                            this.connect();
-                            break;
-                        case JOIN:
-                            this.join();
-                            break;
-                        case START:
-                            if (state != ServerEvents.GAME) {
-                                throw new WrongMessageException();
-                            }
-                            state = ServerEvents.STARTED;
-                            break;
-                        case MOVE:
+        try {
+            while (isConnected()) {
+                String userInput;
+                try {
+                    while ((userInput = in.readLine()) != null && isConnected()) {
+                        //                    System.out.println(userInput);
+                        lastMessage = new ClientMessage(userInput);
+                        switch (lastMessage.getAction()) {
+                            case CONNECT:
+                                this.connect();
+                                break;
+                            case JOIN:
+                                this.join();
+                                break;
+                            case START:
+                                if (state != ServerEvents.GAME) {
+                                    throw new WrongMessageException();
+                                }
+                                state = ServerEvents.STARTED;
+                                break;
+                            case MOVE:
 
-                            lock.lock();
-                            moveMessageReceived.signal();
-                            lock.unlock();
-                            break;
-                        case RESTART:
-                            state = ServerEvents.STARTED;
-                            break;
-                        case EXIT_GAME:
-                            state = ServerEvents.LOBBY;
-                            break;
-                        case DISCONNECT:
-                            connected = false;
-                            lobby.disconnectPlayer(this);
-                            break;
+                                lock.lock();
+                                moveMessageReceived.signal();
+                                lock.unlock();
+                                break;
+                            case RESTART:
+                                state = ServerEvents.STARTED;
+                                break;
+                            case EXIT_GAME:
+                                state = ServerEvents.LOBBY;
+                                break;
+                            case DISCONNECT:
+                                connected = false;
+                                break;
+                        }
                     }
+                } catch (IOException e) {
+                    connected = false;
+                } catch (WrongMessageException e) {
+                    System.out.println("Wrong message received");
+                    this.sendError("missing keys", "invalid keys used");
                 }
-            } catch (IOException e) {
-                connected = false;
-            } catch (WrongMessageException e) {
-                System.out.println("Wrong message received");
-                this.sendError("missing keys", "invalid keys used");
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         try {
+            lobby.disconnectPlayer(this);
             socket.close();
             System.out.println("Closed");
         } catch (IOException e) {
@@ -107,7 +111,7 @@ public class ServerPlayer implements Runnable, Player {
         if (validName) {
             this.sendLobbyStatus();
             state = ServerEvents.LOBBY;
-            System.out.println("Player connected: " + lastMessage.getName());
+            System.out.println("Player connected: " + lastMessage.getName() + "/" + this.getInetAddress().toString());
         } else {
             this.sendError("lobby entry denied", "name or IP is already used or invalid characters");
             try {
@@ -135,8 +139,8 @@ public class ServerPlayer implements Runnable, Player {
     }
 
 
-    private boolean isConnected() {
-        return connected && socket.isConnected();
+    private boolean isConnected() throws IOException {
+        return connected && socket.getInetAddress().isReachable(500);
     }
 
     public String getName() {
@@ -168,8 +172,8 @@ public class ServerPlayer implements Runnable, Player {
         this.sendMessageToClient(json);
     }
 
-    public void sendGameStarted() {
-        String json = ServerMessage.sendGameStarted();
+    public void sendGameStarted(String opponentName) {
+        String json = ServerMessage.sendGameStarted(opponentName);
         this.sendMessageToClient(json);
     }
 

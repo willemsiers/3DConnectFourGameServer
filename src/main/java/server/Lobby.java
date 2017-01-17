@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.regex.Pattern;
 
 /**
  * Created by Rogier on 16-12-16 in Enschede.
@@ -42,12 +43,16 @@ public class Lobby {
             games.add(game);
             Thread thread = new Thread(game);
             thread.start();
-            System.out.println("game.Game " + games.indexOf(game) + " is running!");
+            System.out.println("Game " + games.indexOf(game) + " is running!");
             gameThreads.add(thread);
         }
     }
 
     public boolean addPlayerToLobby(ServerPlayer serverPlayer) {
+        if (!Pattern.matches("([a-zA-Z]|[0-9])*", serverPlayer.getName()) || serverPlayer.getName().length() > 16 || serverPlayer.getName().equals("No player1 yet")) {
+            return false;
+        }
+
         lock.lock();
         for (ServerPlayer player : serverPlayers) {
             if (player.getName().equals(serverPlayer.getName())) {
@@ -115,7 +120,7 @@ public class Lobby {
         if (serverPlayers.contains(serverPlayer)) {
             serverPlayers.remove(serverPlayer);
         }
-        System.out.println("server.ServerPlayer " + serverPlayer.getName() + " disconnected");
+        System.out.println("Player " + serverPlayer.getName() + " disconnected");
 
     }
 

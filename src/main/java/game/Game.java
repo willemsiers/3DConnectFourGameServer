@@ -50,8 +50,8 @@ public class Game implements Runnable {
         while (true) {
             this.init();
             this.waitForAllPlayers();
-            player1.sendGameStarted();
-            player2.sendGameStarted();
+            player1.sendGameStarted(player2.getName());
+            player2.sendGameStarted(player1.getName());
             System.out.println("A game has been started");
 
             started = true;
@@ -91,7 +91,7 @@ public class Game implements Runnable {
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {
-                System.out.println("game.Game interrupted");
+                System.out.println("Game interrupted");
             }
         }
     }

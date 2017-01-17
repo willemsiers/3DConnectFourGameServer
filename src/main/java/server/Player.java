@@ -11,7 +11,7 @@ public interface Player {
 
     void sendOpponentMoved(String move);
 
-    void sendGameStarted();
+    void sendGameStarted(String opponentName);
 
     String requestMove();
 
