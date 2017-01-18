@@ -1,6 +1,6 @@
 # 3D Connect Four game.Game GameServer
 Updated: 16-12-2016
-Version: 0.4
+Version: 0.4.1
 
 
 ## Usage
@@ -19,7 +19,7 @@ For the client, JSON object should be in the following format.
 ```
 {
     "action" : "connect" | "join" | "start" | "move" | "resign" | "restart" | "exit game" | "disconnect"
-    "move" : [a-d][1-4]
+    "move" : [a-d][0-3]
     "room number" : [0-99]
     "name" : ([a-z][0-9])*
 }
