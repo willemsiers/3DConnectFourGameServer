@@ -6,10 +6,7 @@ import org.json.simple.JSONObject;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -38,14 +35,16 @@ public class Lobby {
 
 
     public void makeGameRooms(int size){
+        System.out.print("Games ");
         for (int i = 0; i < size; i++) {
-            Game game = new Game();
+            Game game = new Game(i);
             games.add(game);
             Thread thread = new Thread(game);
             thread.start();
-            System.out.println("Game " + games.indexOf(game) + " is running!");
+            System.out.print(games.indexOf(game) + " ");
             gameThreads.add(thread);
         }
+        System.out.print("are running \n");
     }
 
     public boolean addPlayerToLobby(ServerPlayer serverPlayer) {
@@ -75,13 +74,17 @@ public class Lobby {
 
     public List<String> getFreeRooms(){
         lock.lock();
-        List<String> result = new ArrayList<>();
-
+        String[] result = new String[games.size()];
         for (Game game : games){
-            result.add(game.getPlayer1Name());
+            if (game.isAvailable()) {
+                result[game.getId()] = game.getPlayer1Name();
+
+
+            }
         }
+
         lock.unlock();
-        return result;
+        return Arrays.asList(result);
     }
 
     public String getOpponentName(int roomNumber){
@@ -128,16 +131,17 @@ public class Lobby {
         lock.lock();
         int gameIndex = roomPlayers.get(serverPlayer);
         Thread thread = gameThreads.get(gameIndex);
-        thread.interrupt();
+
         Game game = games.get(gameIndex);
+
         if (game.isStarted()){
+            thread.interrupt();
             game.otherPlayer(serverPlayer).announceWinner(game.otherPlayer(serverPlayer).getName(), null);
             if (game.otherPlayer(serverPlayer) instanceof ServerPlayer) {
                 roomPlayers.remove(game.otherPlayer(serverPlayer));
             }
         }
         roomPlayers.remove(serverPlayer);
-        game = new Game();
         thread = new Thread(game);
         games.set(gameIndex, game);
         gameThreads.set(gameIndex, thread);

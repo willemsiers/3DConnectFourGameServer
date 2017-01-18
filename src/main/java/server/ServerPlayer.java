@@ -109,24 +109,25 @@ public class ServerPlayer implements Runnable, Player {
     }
 
     private void connect() throws WrongMessageException {
-        if (state != ServerEvents.DISCONNECTED) {
+        if (state != ServerEvents.DISCONNECTED && state != ServerEvents.LOBBY) {
             throw new WrongMessageException();
-        }
-
-
-        this.name = lastMessage.getName();
-        boolean validName = lobby.addPlayerToLobby(this);
-        if (validName) {
-            this.sendLobbyStatus();
-            state = ServerEvents.LOBBY;
-            System.out.println("Player connected: " + lastMessage.getName() + "/" + this.getInetAddress().toString());
-        } else {
-            this.sendError("lobby entry denied", "name or IP is already used or invalid characters");
-            try {
-                this.socket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
+        } else if (state == ServerEvents.DISCONNECTED) {
+            this.name = lastMessage.getName();
+            boolean validName = lobby.addPlayerToLobby(this);
+            if (validName) {
+                this.sendLobbyStatus();
+                state = ServerEvents.LOBBY;
+                System.out.println("Player connected: " + lastMessage.getName() + "/" + this.getInetAddress().toString());
+            } else {
+                this.sendError("lobby entry denied", "name or IP is already used or invalid characters");
+                try {
+                    this.socket.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
+        } else {
+            this.sendLobbyStatus();
         }
     }
 

@@ -1,6 +1,6 @@
 # 3D Connect Four game.Game GameServer
 Updated: 16-12-2016
-Version: 0.3.5
+Version: 0.4
 
 
 ## Usage
@@ -66,7 +66,7 @@ Just like the client messages, the server sends messages and not all name/value 
 
 | Event | Message |
 | ----- | -------- |
-| Placed in the server.Lobby    | event:lobby, free lobbies, message |
+| Placed in the Lobby    | event:lobby, free lobbies, message |
 | Placed in a game              | event:game, opponent, message|
 | Game has started              | event:started, opponent, message|
 | Make move                     | event:make move, message |
@@ -74,6 +74,20 @@ Just like the client messages, the server sends messages and not all name/value 
 | Game over                     | event:game over, winner, winning move, message|
 | Server Error                  | event:error, reason, message|
 | Invalid Move                  | event:error, move, reason, message|
+
+### Flow
+
+| State | Possible messages|
+| -------| --------------|
+| Disconnected      | connect |
+| Lobby             | connect, join, disconnect|
+| Game              | start, exit game , disconnect |
+| Make move         | move, resign, exit game, disconnect |
+| Game over         | restart, exit game, disconnect |
+
+
+
+
 
 
 ## GameServer properties
@@ -101,6 +115,8 @@ When a move is successful, the next message will be an "opponent moved" message 
 When a move is denied, two messages will be send. First an error message will be send. Then another "make move" message is send.
 
 The game over message contains a winning move array to see where you or the opponent have placed the winning move.
+
+After the game over state, when one player wants to restart and the other does not, the game is reset and both players will be placed in the lobby.
 
 ### Timeout
 

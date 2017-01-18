@@ -10,6 +10,8 @@ import java.util.Arrays;
  * Created by Rogier on 16-12-16 in Enschede.
  */
 public class Game implements Runnable {
+    private int id;
+
     private Player player1;
 
     private Player player2;
@@ -20,11 +22,14 @@ public class Game implements Runnable {
 
     private boolean started;
 
+    private boolean available;
+
     private int firstMove;
 
     private String winner;
 
-    public Game() {
+    public Game(int id) {
+        this.id = id;
         init();
     }
 
@@ -44,6 +49,7 @@ public class Game implements Runnable {
         player1 = null;
         player2 = null;
         winningMove = null;
+        available = true;
     }
 
 
@@ -53,9 +59,10 @@ public class Game implements Runnable {
             this.waitForAllPlayers();
             player1.sendGameStarted(player2.getName());
             player2.sendGameStarted(player1.getName());
-            System.out.println("A game has been started");
+            System.out.println("Game " + id + " has been started");
 
             started = true;
+            available = false;
             Move lastMove;
             int turn = firstMove;
             if (firstMove == 0) {
@@ -88,12 +95,14 @@ public class Game implements Runnable {
                 player1.announceWinner(turn == 0 ? "you" : "opponent", winningMove);
                 player2.announceWinner(turn == 0 ? "opponent" : "you", winningMove);
             }
+            started = false;
             try {
                 Thread.sleep(20000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
+//            TODO: player wants to restart
+            System.out.println("Game " + id + " is restarted");
         }
 
     }
@@ -172,6 +181,14 @@ public class Game implements Runnable {
 
     public String getWinningMove() {
         return winningMove != null ? (JSONArray.toJSONString(Arrays.asList(winningMove))) : null;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public boolean isAvailable() {
+        return available;
     }
 }
 

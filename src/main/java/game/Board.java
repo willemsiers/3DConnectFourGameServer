@@ -230,19 +230,21 @@ public class Board {
         return result;
     }
 
-    public String toJSONString() {
+    public JSONArray toJSONString() {
         JSONArray arr = new JSONArray();
 
         for (int x = 0; x < GRID_SIZE_X; x++) {
             JSONArray array = new JSONArray();
             for (int y = 0; y < GRID_SIZE_Y; y++) {
                 JSONArray jsonArray = new JSONArray();
-                jsonArray.addAll(Arrays.asList(grid[x][y]).subList(0, GRID_SIZE_Z));
+                for (int z = 0; z < GRID_SIZE_Z; z++) {
+                    jsonArray.add(grid[x][y][z].toString());
+                }
                 array.add(jsonArray);
             }
             arr.add(array);
         }
-        return arr.toJSONString();
+        return arr;
     }
 
     public String[] getWinningMove() {

@@ -26,6 +26,7 @@ public class GameServlet extends HttpServlet {
                     .getRequestDispatcher("home.jsp");
             rd.forward(req, resp);
         } else if (req.getParameterMap().containsKey("action")) {
+            resp.addHeader("Access-Control-Allow-Origin", "*");
             if (req.getParameterValues("action")[0].equals("game")) {
                 PrintWriter out = resp.getWriter();
                 int id = 0;

@@ -78,14 +78,31 @@ public class SimpleClient implements Runnable {
             JSONObject obj = (JSONObject) anArray;
             System.out.println("Game number: " + obj.get("room number") + " against: " + obj.get("opponent"));
         }
-        int gameNumber = -1;
-        while (gameNumber != -1) {
 
-            gameNumber = Integer.parseInt(getUserInput("Choose game number..."));
 
+        while (MessageType.fromString(object.get("event").toString(), "") != MessageType.GAME) {
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            int gameNumber = -1;
+            while (gameNumber != -1) {
+
+                gameNumber = Integer.parseInt(getUserInput("Choose game number..."));
+
+            }
+            this.join(4);
+            object = getServerMessage();
+            if (MessageType.fromString(object.get("event").toString(), "") == MessageType.ERROR) {
+                System.out.println(object);
+            }
         }
-        this.join(5);
-        object = getServerMessage();
+
+
+
+
+
         System.out.println("Opponent: " + object.get("opponent"));
         boolean start = true;
         while (!start) {

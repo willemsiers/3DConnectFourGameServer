@@ -17,10 +17,13 @@ public class ServerMessage {
         obj.put("event", "lobby");
         JSONArray array = new JSONArray();
         for (int i = 0; i < freeLobbies.size(); i++){
-            JSONObject obj1  = new JSONObject();
-            obj1.put("room number", i);
-            obj1.put("opponent" , freeLobbies.get(i));
-            array.add(obj1);
+            if (freeLobbies.get(i) != null) {
+                JSONObject obj1 = new JSONObject();
+                obj1.put("room number", i);
+                obj1.put("opponent", freeLobbies.get(i));
+                array.add(obj1);
+            }
+
         }
         obj.put("free lobbies" , array);
         obj.put("message", "lobby message");
