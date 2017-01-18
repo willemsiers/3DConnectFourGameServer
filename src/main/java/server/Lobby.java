@@ -131,7 +131,7 @@ public class Lobby {
         thread.interrupt();
         Game game = games.get(gameIndex);
         if (game.isStarted()){
-            game.otherPlayer(serverPlayer).announceWinner(game.otherPlayer(serverPlayer).getName());
+            game.otherPlayer(serverPlayer).announceWinner(game.otherPlayer(serverPlayer).getName(), null);
             if (game.otherPlayer(serverPlayer) instanceof ServerPlayer) {
                 roomPlayers.remove(game.otherPlayer(serverPlayer));
             }
