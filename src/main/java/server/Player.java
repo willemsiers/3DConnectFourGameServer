@@ -15,7 +15,7 @@ public interface Player {
 
     String requestMove();
 
-    void announceWinner(String winner);
+    void announceWinner(String winner, String[] winningMove);
 
     String moveDenied();
 }

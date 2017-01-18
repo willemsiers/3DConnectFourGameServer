@@ -3,6 +3,7 @@ package server;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -58,10 +59,21 @@ public class ServerMessage {
         return obj.toJSONString();
     }
 
-    public static String sendGameOver(String winner){
+    public static String sendGameOver(String winner, String[] winningMove) {
         JSONObject obj = new JSONObject();
         obj.put("event", "game over");
         obj.put("winner", winner);
+
+        if (winningMove != null) {
+            JSONArray array = new JSONArray();
+            Collections.addAll(array, winningMove);
+            obj.put("winning move", array);
+        } else {
+            obj.put("winning move", null);
+        }
+
+
+
         obj.put("message", "lost message");
         return obj.toJSONString();
     }

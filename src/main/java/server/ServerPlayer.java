@@ -7,6 +7,8 @@ import java.io.PrintWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -25,6 +27,8 @@ public class ServerPlayer implements Runnable, Player {
     private ClientMessage lastMessage;
     private Lock lock;
     private Condition moveMessageReceived;
+    private Timer timer;
+
 
     public ServerPlayer(Socket socket, BufferedReader in, Lobby lobby) {
         this.socket = socket;
@@ -40,6 +44,7 @@ public class ServerPlayer implements Runnable, Player {
         this.lock = new ReentrantLock();
         moveMessageReceived = lock.newCondition();
         state = ServerEvents.DISCONNECTED;
+        timer = new Timer();
     }
 
     public void run() {
@@ -64,10 +69,13 @@ public class ServerPlayer implements Runnable, Player {
                                 state = ServerEvents.STARTED;
                                 break;
                             case MOVE:
+                                if (state == ServerEvents.MOVE_DENIED) {
 
-                                lock.lock();
-                                moveMessageReceived.signal();
-                                lock.unlock();
+                                } else if (state == ServerEvents.MAKE_MOVE) {
+                                    lock.lock();
+                                    moveMessageReceived.signal();
+                                    lock.unlock();
+                                }
                                 break;
                             case RESTART:
                                 state = ServerEvents.STARTED;
@@ -186,8 +194,14 @@ public class ServerPlayer implements Runnable, Player {
         lock.lock();
         state = ServerEvents.MAKE_MOVE;
         this.sendMoveRequest();
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                state = ServerEvents.MOVE_DENIED;
+//            }
+//        },15000);
         try {
-            moveMessageReceived.await();
+            moveMessageReceived.await(15, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -199,6 +213,7 @@ public class ServerPlayer implements Runnable, Player {
         lock.lock();
         this.sendError("move denied", "the move was not permitted");
         this.sendMoveRequest();
+
         try {
             moveMessageReceived.await();
         } catch (InterruptedException e) {
@@ -208,8 +223,8 @@ public class ServerPlayer implements Runnable, Player {
         return lastMessage.getMove();
     }
 
-    public void announceWinner(String winner) {
-        String json = ServerMessage.sendGameOver(winner);
+    public void announceWinner(String winner, String[] winningMove) {
+        String json = ServerMessage.sendGameOver(winner, winningMove);
         this.out.println(json);
         this.out.flush();
     }

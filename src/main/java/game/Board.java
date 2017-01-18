@@ -3,6 +3,8 @@ package game;
 import org.json.simple.JSONArray;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Created by Rogier on 16-12-16 in Enschede.
@@ -80,7 +82,7 @@ public class Board {
     //    grid [x][y][z]
     private GridMark[][][] grid;
 
-    private String[] winningMove;
+    private Set<String> winningMove;
 
 
     public Board() {
@@ -92,6 +94,7 @@ public class Board {
                 }
             }
         }
+        winningMove = new HashSet<>();
     }
 
 
@@ -147,10 +150,13 @@ public class Board {
             int[] direction1 = axis[0];
             int[] direction2 = axis[1];
             int chainLength = 1;
+            winningMove.add("" + move.getX() + move.getY() + move.getZ());
             chainLength += checkDirection(origin, direction1, color);
             chainLength += checkDirection(origin, direction2, color);
             if (chainLength >= CONNECT) {
                 return true;
+            } else {
+                winningMove = new HashSet<>();
             }
         }
         return false;
@@ -163,12 +169,6 @@ public class Board {
                 origin[2] + multiplier * direction[2]};
     }
 
-    /**
-     * Helper method of lastMoveWasWinning
-     * Count the chain length of the specified color at the origin in a certain direction (bounded to chain length n)
-     *
-     * Careful: Works for color == null as well!
-     */
     private int checkDirection(final int[] origin, final int[] direction, final GridMark color) {
         int chainLength = 0;
         for (int i = 1; i < CONNECT; i++) {
@@ -176,6 +176,7 @@ public class Board {
             if (this.isValidSlot(coordinates[0], coordinates[1], coordinates[2])) {
                 GridMark occupiedBy = grid[coordinates[0]][coordinates[1]][coordinates[2]];
                 if (occupiedBy == color) {
+                    winningMove.add("" + coordinates[0] + coordinates[1] + coordinates[2]);
                     chainLength++;
                 } else {
                     break;
@@ -242,5 +243,11 @@ public class Board {
             arr.add(array);
         }
         return arr.toJSONString();
+    }
+
+    public String[] getWinningMove() {
+        String[] result = winningMove.toArray(new String[4]);
+        Arrays.sort(result);
+        return result;
     }
 }

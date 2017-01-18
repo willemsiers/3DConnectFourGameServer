@@ -1,9 +1,10 @@
 package game;
 
+import org.json.simple.JSONArray;
 import server.Player;
 import server.ServerPlayer;
 
-import java.util.List;
+import java.util.Arrays;
 
 /**
  * Created by Rogier on 16-12-16 in Enschede.
@@ -13,7 +14,7 @@ public class Game implements Runnable {
 
     private Player player2;
 
-    private List<String> winningMove;
+    private String[] winningMove;
 
     private Board board;
 
@@ -42,7 +43,7 @@ public class Game implements Runnable {
         firstMove = (int)Math.round(Math.random());
         player1 = null;
         player2 = null;
-
+        winningMove = null;
     }
 
 
@@ -63,6 +64,11 @@ public class Game implements Runnable {
                 lastMove = player2Move();
             }
             while (!board.gameOver(lastMove)) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 turn = (turn + 1) % 2;
                 if (turn == 0) {
                     lastMove = this.player1Move();
@@ -72,15 +78,21 @@ public class Game implements Runnable {
             }
             if (board.draw()) {
                 winner = "draw";
-                player1.announceWinner("draw");
-                player2.announceWinner("draw");
+                player1.announceWinner("draw", null);
+                player2.announceWinner("draw", null);
             } else {
                 System.out.println(board.toString());
+                winningMove = board.getWinningMove();
+                System.out.println("Winning move:" + Arrays.deepToString(winningMove));
                 winner = turn == 0 ? player1.getName() : player2.getName();
-                player1.announceWinner(turn == 0 ? "you" : "opponent");
-                player2.announceWinner(turn == 0 ? "opponent" : "you");
+                player1.announceWinner(turn == 0 ? "you" : "opponent", winningMove);
+                player2.announceWinner(turn == 0 ? "opponent" : "you", winningMove);
             }
-
+            try {
+                Thread.sleep(20000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
         }
 
@@ -96,7 +108,8 @@ public class Game implements Runnable {
         }
     }
 
-    public Move player1Move() {
+    private Move player1Move() {
+//        TODO: Time elapsed
         Move move = new Move(player1.requestMove(), GridMark.RED);
         while (!board.isValidMove(move)) {
             move = new Move(player1.moveDenied(), GridMark.RED);
@@ -106,7 +119,7 @@ public class Game implements Runnable {
         return move;
     }
 
-    public Move player2Move() {
+    private Move player2Move() {
         Move move = new Move(player2.requestMove(), GridMark.YELLOW);
         while (!board.isValidMove(move)) {
             move = new Move(player2.moveDenied(), GridMark.YELLOW);
@@ -157,6 +170,8 @@ public class Game implements Runnable {
         board.makeMove(move);
     }
 
-
+    public String getWinningMove() {
+        return winningMove != null ? (JSONArray.toJSONString(Arrays.asList(winningMove))) : null;
+    }
 }
 

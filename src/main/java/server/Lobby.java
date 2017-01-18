@@ -155,7 +155,7 @@ public class Lobby {
         obj.put("player2", game.getPlayer2Name());
         obj.put("winner", game.getWinner());
         obj.put("game number", id);
-        obj.put("winning move", null);
+        obj.put("winning move", game.getWinningMove());
         return obj.toJSONString();
     }
 

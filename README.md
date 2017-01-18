@@ -1,6 +1,6 @@
 # 3D Connect Four game.Game GameServer
 Updated: 16-12-2016
-Version: 0.3.4
+Version: 0.3.5
 
 
 ## Usage
@@ -47,6 +47,7 @@ Some name/value pairs are not required in every message. The table below shows w
     "event" : "lobby" | "game" | "started" | "make move" | "opponent moved" | "game over" | "error"
     "move" : "[a-d][1-4]"
     "winner" : "you" | "opponent" | "draw"
+    "winning move" : [("[0-3][0-3][0-3]")^4]
     "opponent" :  ([a-z][0-9])*
     "free lobbies" : [{
                         "room number" : [0-99]
@@ -65,14 +66,14 @@ Just like the client messages, the server sends messages and not all name/value 
 
 | Event | Message |
 | ----- | -------- |
-| Placed in the server.Lobby | event:lobby, free lobbies, message |
-| Placed in a game | event:game, opponent, message|
-| Game has started | event:started, opponent, message|
-| Make move |  event:make move, message |
-| Opponent moved | event:opponent moved, move, message |
-| Game over | event:game over,winner,  message|
-| Server Error | event:error, reason, message|
-| Invalid Move | event:error, move, reason, message|
+| Placed in the server.Lobby    | event:lobby, free lobbies, message |
+| Placed in a game              | event:game, opponent, message|
+| Game has started              | event:started, opponent, message|
+| Make move                     | event:make move, message |
+| Opponent moved                | event:opponent moved, move, message |
+| Game over                     | event:game over, winner, winning move, message|
+| Server Error                  | event:error, reason, message|
+| Invalid Move                  | event:error, move, reason, message|
 
 
 ## GameServer properties
@@ -88,15 +89,18 @@ Players who not stick to the rules will not be allowed access onto the server.
 
 ### Lobby
 
+It could happen that when joining a certain game, the chosen game contains already the maximum amount of players. Then the server sends an error message containing "game full".
+
 ### Game
 Concerning moves:
-a-z is for the y-axis.
-0-3 is for the x-axis.
+- [a-d] is for the y-axis.
+- [0-3] is for the x-axis.
 
 When a move is successful, the next message will be an "opponent moved" message or a "game over" message.
 
 When a move is denied, two messages will be send. First an error message will be send. Then another "make move" message is send.
 
+The game over message contains a winning move array to see where you or the opponent have placed the winning move.
 
 ### Timeout
 
