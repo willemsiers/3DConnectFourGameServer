@@ -88,7 +88,13 @@ public class Lobby {
     }
 
     public String getOpponentName(int roomNumber){
-        return games.get(roomNumber).getPlayer1Name();
+        if (games.get(roomNumber).getPlayer2Name().equals("No player2 yet")) {
+            return "No player2 yet";
+        } else {
+            return games.get(roomNumber).getPlayer1Name();
+        }
+
+
     }
 
     public boolean addPlayerToRoom(ServerPlayer serverPlayer, int roomNumber) {
@@ -133,7 +139,7 @@ public class Lobby {
         Thread thread = gameThreads.get(gameIndex);
 
         Game game = games.get(gameIndex);
-
+        game.removePlayer(serverPlayer);
         if (game.isStarted()){
             thread.interrupt();
             game.otherPlayer(serverPlayer).announceWinner(game.otherPlayer(serverPlayer).getName(), null);
@@ -168,7 +174,7 @@ public class Lobby {
         lock.lock();
         for (Game game : games) {
             JSONObject object = new JSONObject();
-            object.put("game number ", games.indexOf(game));
+            object.put("game number", games.indexOf(game));
             object.put("player1", game.getPlayer1Name());
             object.put("player2", game.getPlayer2Name());
             array.add(object);

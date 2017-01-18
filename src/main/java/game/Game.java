@@ -16,6 +16,10 @@ public class Game implements Runnable {
 
     private Player player2;
 
+    private String player1name;
+
+    private String player2name;
+
     private String[] winningMove;
 
     private Board board;
@@ -23,6 +27,8 @@ public class Game implements Runnable {
     private boolean started;
 
     private boolean available;
+
+    private boolean restart;
 
     private int firstMove;
 
@@ -43,66 +49,86 @@ public class Game implements Runnable {
     }
 
 
-    public void init(){
+    private void init() {
         board = new Board();
         firstMove = (int)Math.round(Math.random());
         player1 = null;
         player2 = null;
         winningMove = null;
         available = true;
+        restart = true;
+        player1name = null;
+        player2name = null;
     }
+
+    private void restartWithSamePlayers() {
+        board = new Board();
+        firstMove = (int) Math.round(Math.random());
+        winningMove = null;
+    }
+
+    private boolean playersWantRestart() {
+        double startTime = System.currentTimeMillis() / 1000;
+        while ((System.currentTimeMillis() / 1000) - startTime < 180) {
+            if (player1 != null && player2 != null && player1.wantsToRestart() && player2.wantsToRestart()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
 
     public void run(){
         while (true) {
             this.init();
             this.waitForAllPlayers();
-            player1.sendGameStarted(player2.getName());
-            player2.sendGameStarted(player1.getName());
-            System.out.println("Game " + id + " has been started");
+            while (restart) {
+                player1name = player1.getName();
+                player2name = player2.getName();
+                player1.sendGameStarted(player2.getName());
+                player2.sendGameStarted(player1.getName());
+                System.out.println("Game " + id + " has been started");
 
-            started = true;
-            available = false;
-            Move lastMove;
-            int turn = firstMove;
-            if (firstMove == 0) {
-                lastMove = player1Move();
-            } else {
-                lastMove = player2Move();
-            }
-            while (!board.gameOver(lastMove)) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                turn = (turn + 1) % 2;
-                if (turn == 0) {
-                    lastMove = this.player1Move();
+                started = true;
+                available = false;
+                Move lastMove;
+                int turn = firstMove;
+                if (firstMove == 0) {
+                    lastMove = player1Move();
                 } else {
-                    lastMove = this.player2Move();
+                    lastMove = player2Move();
                 }
+                while (!board.gameOver(lastMove)) {
+                    try {
+                        Thread.sleep(2000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                    }
+                    turn = (turn + 1) % 2;
+                    if (turn == 0) {
+                        lastMove = this.player1Move();
+                    } else {
+                        lastMove = this.player2Move();
+                    }
+                }
+                if (board.draw()) {
+                    winner = "draw";
+                    player1.announceWinner("draw", null);
+                    player2.announceWinner("draw", null);
+                } else {
+                    System.out.println(board.toString());
+                    winningMove = board.getWinningMove();
+                    System.out.println("Winning move:" + Arrays.deepToString(winningMove));
+                    winner = turn == 0 ? player1.getName() : player2.getName();
+                    player1.announceWinner(turn == 0 ? "you" : "opponent", winningMove);
+                    player2.announceWinner(turn == 0 ? "opponent" : "you", winningMove);
+                }
+                started = false;
+                restart = playersWantRestart();
+                this.restartWithSamePlayers();
             }
-            if (board.draw()) {
-                winner = "draw";
-                player1.announceWinner("draw", null);
-                player2.announceWinner("draw", null);
-            } else {
-                System.out.println(board.toString());
-                winningMove = board.getWinningMove();
-                System.out.println("Winning move:" + Arrays.deepToString(winningMove));
-                winner = turn == 0 ? player1.getName() : player2.getName();
-                player1.announceWinner(turn == 0 ? "you" : "opponent", winningMove);
-                player2.announceWinner(turn == 0 ? "opponent" : "you", winningMove);
-            }
-            started = false;
-            try {
-                Thread.sleep(20000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-//            TODO: player wants to restart
-            System.out.println("Game " + id + " is restarted");
+            System.out.println("Game " + id + " is emptied and restarted");
         }
 
     }
@@ -118,7 +144,6 @@ public class Game implements Runnable {
     }
 
     private Move player1Move() {
-//        TODO: Time elapsed
         Move move = new Move(player1.requestMove(), GridMark.RED);
         while (!board.isValidMove(move)) {
             move = new Move(player1.moveDenied(), GridMark.RED);
@@ -140,11 +165,23 @@ public class Game implements Runnable {
 
 
     public String getPlayer1Name(){
-        return player1 != null ? player1.getName() : "No player1 yet";
+        if (player1 != null) {
+            return player1.getName();
+        } else if (!available) {
+            return player1name;
+        } else {
+            return "No player1 yet";
+        }
     }
 
     public String getPlayer2Name(){
-        return player2 != null ? player2.getName() : "No player2 yet";
+        if (player2 != null) {
+            return player2.getName();
+        } else if (!available) {
+            return player2name;
+        } else {
+            return "No player2 yet";
+        }
     }
 
     public Board getBoard() {
@@ -189,6 +226,14 @@ public class Game implements Runnable {
 
     public boolean isAvailable() {
         return available;
+    }
+
+    public void removePlayer(ServerPlayer player) {
+        if (player == player1) {
+            player1 = null;
+        } else if (player == player2) {
+            player2 = null;
+        }
     }
 }
 

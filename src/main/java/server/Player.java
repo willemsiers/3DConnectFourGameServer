@@ -9,6 +9,8 @@ public interface Player {
 
     boolean wantsToStart();
 
+    boolean wantsToRestart();
+
     void sendOpponentMoved(String move);
 
     void sendGameStarted(String opponentName);

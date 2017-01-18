@@ -8,7 +8,7 @@ Version: 0.4.1
 Connect via a standard TCP socket model. For Java client implementations, I recommend the standard Socket class.
 The IP address and Port number will be given when the tournament starts.
 
-IMPORTANT: Always end a message with a new line "\n"
+IMPORTANT: Always end a message with a new line ("\n")
 
 ## Protocol
 The protocol uses JSON objects, any non-JSON object will be discarded.
@@ -106,6 +106,9 @@ Players who not stick to the rules will not be allowed access onto the server.
 It could happen that when joining a certain game, the chosen game contains already the maximum amount of players. Then the server sends an error message containing "game full".
 
 ### Game
+
+For a game to be started, both players have to send a "start" game message to server. This "start" message can be sent at any moment, but be careful, because after 3 minutes without starting, a player will be kicked out of the game. After receiving both start messages, both players will receive a "started message". one player will be chosen to play the first move by receiving a "make move" message and the other will receive first a "opponent moved" message and then a "make move" message.
+
 Concerning moves:
 - [a-d] is for the y-axis.
 - [0-3] is for the x-axis.

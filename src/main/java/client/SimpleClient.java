@@ -19,7 +19,6 @@ public class SimpleClient implements Runnable {
     private BufferedReader reader;
     private PrintWriter out;
     private ClientGame clientGame;
-    private static int nameCount = 1;
 
 
     public SimpleClient(int port) {
@@ -87,21 +86,17 @@ public class SimpleClient implements Runnable {
                 e.printStackTrace();
             }
             int gameNumber = -1;
-            while (gameNumber != -1) {
+            while (gameNumber == -1) {
 
                 gameNumber = Integer.parseInt(getUserInput("Choose game number..."));
 
             }
-            this.join(4);
+            this.join(gameNumber);
             object = getServerMessage();
             if (MessageType.fromString(object.get("event").toString(), "") == MessageType.ERROR) {
                 System.out.println(object);
             }
         }
-
-
-
-
 
         System.out.println("Opponent: " + object.get("opponent"));
         boolean start = true;
@@ -138,9 +133,11 @@ public class SimpleClient implements Runnable {
         } else {
             System.out.println(type);
         }
+        int moveCount = 0;
         object = getServerMessage();
         type = MessageType.fromString(object.get("event").toString(), "");
         while (type != MessageType.GAME_OVER) {
+            moveCount++;
             if (type == MessageType.OPPONENT_MOVED) {
                 clientGame.enterMove(object.get("move").toString());
             } else {
@@ -158,6 +155,14 @@ public class SimpleClient implements Runnable {
             if (type == MessageType.GAME_OVER) {
                 break;
             } else if (type == MessageType.MOVE) {
+//                if (moveCount > 20){
+//                    try {
+//                        Thread.sleep(16000);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+
                 this.makeMove();
             } else {
                 System.out.println("impossible 2");
@@ -180,7 +185,6 @@ public class SimpleClient implements Runnable {
         JSONObject obj = new JSONObject();
         obj.put("action", "connect");
         obj.put("name", name);
-        nameCount++;
         out.println(obj.toJSONString());
         out.flush();
     }

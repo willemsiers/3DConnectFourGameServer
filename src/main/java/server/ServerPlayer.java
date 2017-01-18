@@ -8,7 +8,8 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.Timer;
-import java.util.concurrent.TimeUnit;
+import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -28,6 +29,7 @@ public class ServerPlayer implements Runnable, Player {
     private Lock lock;
     private Condition moveMessageReceived;
     private Timer timer;
+    private AtomicBoolean moveReceived;
 
 
     public ServerPlayer(Socket socket, BufferedReader in, Lobby lobby) {
@@ -45,6 +47,7 @@ public class ServerPlayer implements Runnable, Player {
         moveMessageReceived = lock.newCondition();
         state = ServerEvents.DISCONNECTED;
         timer = new Timer();
+        moveReceived = new AtomicBoolean();
     }
 
     public void run() {
@@ -67,11 +70,10 @@ public class ServerPlayer implements Runnable, Player {
                                     throw new WrongMessageException();
                                 }
                                 state = ServerEvents.STARTED;
+                                System.out.println("Player " + name + " wants to start");
                                 break;
                             case MOVE:
-                                if (state == ServerEvents.MOVE_DENIED) {
-
-                                } else if (state == ServerEvents.MAKE_MOVE) {
+                                if (state == ServerEvents.MAKE_MOVE) {
                                     lock.lock();
                                     moveMessageReceived.signal();
                                     lock.unlock();
@@ -81,6 +83,7 @@ public class ServerPlayer implements Runnable, Player {
                                 state = ServerEvents.STARTED;
                                 break;
                             case EXIT_GAME:
+                                exitGame();
                                 state = ServerEvents.LOBBY;
                                 break;
                             case DISCONNECT:
@@ -100,9 +103,14 @@ public class ServerPlayer implements Runnable, Player {
         }
 
         try {
-            lobby.disconnectPlayer(this);
-            socket.close();
-            System.out.println("Closed");
+            if (state != ServerEvents.DISCONNECTED) {
+                lobby.disconnectPlayer(this);
+                socket.close();
+                System.out.println("Closed socket");
+                state = ServerEvents.DISCONNECTED;
+            }
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -112,6 +120,7 @@ public class ServerPlayer implements Runnable, Player {
         if (state != ServerEvents.DISCONNECTED && state != ServerEvents.LOBBY) {
             throw new WrongMessageException();
         } else if (state == ServerEvents.DISCONNECTED) {
+
             this.name = lastMessage.getName();
             boolean validName = lobby.addPlayerToLobby(this);
             if (validName) {
@@ -122,6 +131,7 @@ public class ServerPlayer implements Runnable, Player {
                 this.sendError("lobby entry denied", "name or IP is already used or invalid characters");
                 try {
                     this.socket.close();
+                    state = ServerEvents.DISCONNECTED;
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -136,8 +146,9 @@ public class ServerPlayer implements Runnable, Player {
             throw new WrongMessageException();
         }
         int roomNumber = lastMessage.getLobbyNumber();
-        String opponent = lobby.getOpponentName(roomNumber);
+
         boolean validGame = lobby.addPlayerToRoom(this, roomNumber);
+        String opponent = lobby.getOpponentName(roomNumber);
         if (validGame) {
             System.out.println(this.name + " added to a game");
             this.sendGameStatus(opponent);
@@ -145,6 +156,13 @@ public class ServerPlayer implements Runnable, Player {
         } else {
             this.sendError("game full", "the game is full at the moment");
         }
+    }
+
+    private void exitGame() throws WrongMessageException {
+        if (state != ServerEvents.GAME && state != ServerEvents.STARTED && state != ServerEvents.RESTARTED && state != ServerEvents.MAKE_MOVE) {
+            throw new WrongMessageException();
+        }
+        lobby.exitGame(this);
     }
 
 
@@ -194,17 +212,14 @@ public class ServerPlayer implements Runnable, Player {
     public String requestMove() {
         lock.lock();
         state = ServerEvents.MAKE_MOVE;
+        moveReceived.set(false);
         this.sendMoveRequest();
-//        timer.schedule(new TimerTask() {
-//            @Override
-//            public void run() {
-//                state = ServerEvents.MOVE_DENIED;
-//            }
-//        },15000);
+        timer.schedule(new MoveTimerTask(), 15000);
         try {
-            moveMessageReceived.await(15, TimeUnit.SECONDS);
+            moveMessageReceived.await();
+            moveReceived.set(true);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            Thread.currentThread().interrupt();
         }
         lock.unlock();
         return lastMessage.getMove();
@@ -238,4 +253,20 @@ public class ServerPlayer implements Runnable, Player {
         return state == ServerEvents.STARTED;
     }
 
+    public boolean wantsToRestart() {
+        return state == ServerEvents.RESTARTED;
+    }
+
+    class MoveTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            if (!moveReceived.get()) {
+                try {
+                    exitGame();
+                } catch (WrongMessageException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 }
