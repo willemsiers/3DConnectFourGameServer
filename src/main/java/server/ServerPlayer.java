@@ -214,7 +214,7 @@ public class ServerPlayer implements Runnable, Player {
         state = ServerEvents.MAKE_MOVE;
         moveReceived.set(false);
         this.sendMoveRequest();
-        timer.schedule(new MoveTimerTask(), 15000);
+//        timer.schedule(new MoveTimerTask(), 15000);
         try {
             moveMessageReceived.await();
             moveReceived.set(true);

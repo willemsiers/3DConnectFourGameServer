@@ -54,6 +54,7 @@ public class Game implements Runnable {
         firstMove = (int)Math.round(Math.random());
         player1 = null;
         player2 = null;
+        winner = null;
         winningMove = null;
         available = true;
         restart = true;
@@ -209,7 +210,7 @@ public class Game implements Runnable {
     }
 
     public String getWinner() {
-        return winner != null ? winner : "No winner yet";
+        return winner;
     }
 
     public void makeMove(Move move){

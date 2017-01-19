@@ -102,10 +102,14 @@ public class Lobby {
         boolean roomFull = false;
         Game game = games.get(roomNumber);
         int numberOfPlayers = game.numberOfPlayers();
-        if (numberOfPlayers == 0){
-            game.setPlayer1(serverPlayer);
-        } else if (numberOfPlayers == 1) {
-            game.setPlayer2(serverPlayer);
+        if (game.isAvailable()) {
+            if (numberOfPlayers == 0) {
+                game.setPlayer1(serverPlayer);
+            } else if (numberOfPlayers == 1) {
+                game.setPlayer2(serverPlayer);
+            } else {
+                roomFull = true;
+            }
         } else {
             roomFull = true;
         }
