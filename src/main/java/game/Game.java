@@ -51,7 +51,7 @@ public class Game implements Runnable {
 
     private void init() {
         board = new Board();
-        firstMove = (int)Math.round(Math.random());
+        firstMove = (Math.random()<0.5)?0:1;
         player1 = null;
         player2 = null;
         winner = null;
