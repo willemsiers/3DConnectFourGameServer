@@ -73,7 +73,7 @@ public class SimpleClient implements Runnable {
                 case CONNECT:
 //                    String name = this.getUserInput("Choose")
                     if (state == ClientState.DISCONNECTED) {
-                        String name = "RogierAISuper" + ((int) (Math.random() * 1000));
+                        String name = "RogierUberBot" + ((int) (Math.random() * 1000));
                         String host = this.getUserInput("Input host");
                         int port = Integer.parseInt(this.getUserInput("Input port"));
                         this.connect(name, host, port);
@@ -116,6 +116,8 @@ public class SimpleClient implements Runnable {
                             this.connectForLobby();
                         }
                         state = ClientState.LOBBY;
+                    } else {
+                        System.out.println(response);
                     }
                     break;
                 case START:

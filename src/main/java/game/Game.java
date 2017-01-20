@@ -54,7 +54,7 @@ public class Game implements Runnable {
 
     private void init() {
         board = new Board();
-        firstMove = (Math.random()<0.5)?0:1;
+        firstMove = 0;
         player1 = null;
         player2 = null;
         winner = null;
@@ -99,7 +99,8 @@ public class Game implements Runnable {
                 player1.sendGameStarted(player2.getName());
                 player2.sendGameStarted(player1.getName());
                 System.out.println("Game " + id + " has been started");
-
+                winner = null;
+                winningMove = null;
                 started = true;
                 available = false;
                 Move lastMove;

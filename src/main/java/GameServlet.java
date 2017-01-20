@@ -20,15 +20,6 @@ public class GameServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-//        if (req.getParameterMap().size() == 0) {
-//
-//
-//
-//            RequestDispatcher rd = req
-//                    .getRequestDispatcher("index.jsp");
-//            rd.forward(req, resp);
-//
-//        } else
         if (req.getParameterMap().containsKey("action")) {
             resp.addHeader("Access-Control-Allow-Origin", "*");
             if (req.getParameterValues("action")[0].equals("game")) {

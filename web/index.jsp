@@ -192,7 +192,7 @@
             <br><br> <br><br><br>
             <div display="none" id="banaanwin">
                 <h1 style=" display:none" id="wintext"></h1>
-                <img class="img-responsive" id="winbanaan" src="banaan.gif" style=" display:none; position:absolute"
+                <img class="img-responsive" id="winbanaan" src="frans.jpg" style=" display:none; position:absolute"
                      alt="">
 
             </div>
