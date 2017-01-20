@@ -163,58 +163,58 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-md-3">
-            <img style="width:100px" src="banaan.gif" alt="">
-            <img style="width:100px" src="banaan.gif" alt="">
-            <img style="width:100px" src="banaan.gif" alt="">
+            <img style="width:100px" src="/banaan.gif" alt="">
+            <img style="width:100px" src="/banaan.gif" alt="">
+            <img style="width:100px" src="/banaan.gif" alt="">
 
-            <img style="width:100px" src="banaan.gif" alt="">
+            <img style="width:100px" src="/banaan.gif" alt="">
         </div>
         <div class="col-md-6">
             <br>
             <h1 align='center' style='font-family: "Comic Sans MS" '>CHRISTIAANS 4-OP-EEN-RIJ-3D EPIC NEGA VIEWER</h1>
         </div>
         <div class="col-md-3">
-            <img style="width:100px" src="banaan.gif" alt="">
-            <img style="width:100px" src="banaan.gif" alt="">
-            <img style="width:100px" src="banaan.gif" alt="">
+            <img style="width:100px" src="/banaan.gif" alt="">
+            <img style="width:100px" src="/banaan.gif" alt="">
+            <img style="width:100px" src="/banaan.gif" alt="">
 
-            <img style="width:100px" src="banaan.gif" alt="">
+            <img style="width:100px" src="/banaan.gif" alt="">
         </div>
     </div>
+
+    <br> <br>
     <div class="row">
-        <%--<div class="col-md-3">--%>
-        <%--<br><br><br>--%>
-        <%--<img src="Congratulations_you_won.gif" alt="">--%>
-        <%--</div>--%>
-        <div class="col-md-6">
+        <div class="col-md-2">
+            <br><br><br>
+            <img class="img-responsive" src="Congratulations_you_won.gif" alt="">
+        </div>
+        <div class="col-md-4">
             <br><br> <br><br><br>
             <div display="none" id="banaanwin">
                 <h1 style=" display:none" id="wintext"></h1>
-                <img id="winbanaan" src="banaan.gif" style=" display:none; position:absolute" alt="">
+                <img class="img-responsive" id="winbanaan" src="banaan.gif" style=" display:none; position:absolute"
+                     alt="">
 
             </div>
             <table id="lobbytable" class="table table-striped">
                 <!--   -->
             </table>
         </div>
-        <div class="col-md-6">
-            <br><br>
+        <div class="col-md-4">
+            <!-- <br><br>
 
             <div class="row">
                 <div style="
-    background-color: aliceblue;" class="col-md-4">
-                    <h2 style="color:red" align="center" id="player-1"></h2>
-                </div>
-                <div class="col-md-4">
-                    <h2 align="center" id="vstitle">NO GAME STARTED</h2>
-                </div>
-                <div style="
-    background-color: pink;" class="col-md-4">
-                    <h2 style="color:yellow" align="center" id="player-2"></h2>
-                </div>
-
+                background-color: aliceblue;" class="col-md-4">
+                <h2 style="color:red" align="center" id="player-1"></h2>
             </div>
-
+            <div class="col-md-4">
+                <h2  align="center" id="vstitle">NO GAME STARTED</h2>
+            </div>
+            <div style="
+            background-color: pink;" class="col-md-4">
+            <h2 style="color:yellow" 	align="center" id="player-2"></h2>
+        -->
             <table>
                 <tr class="row-1">
                     <td class="cell">
@@ -322,13 +322,15 @@
                 </tr>
             </table>
         </div>
-        <%--<div class="col-md-3">--%>
-        <%--<img src="frans.jpg" alt="">--%>
-        <%--</div>--%>
+        <div class="col-md-2">
+            <img class="img-responsive" src="frans.jpg" alt="">
+        </div>
     </div>
+
+
     <div class="row">
-        <div class="col-md-4"><img src="download (1).jpg" alt=""></div>
-        <div class="col-md-4"><img src="ynoLs0I.gif" alt=""></div>
+        <div class="col-md-4"><img class="img-responsive" src="download (1).jpg" alt=""></div>
+        <div class="col-md-4"><img class="img-responsive" src="ynoLs0I.gif" alt=""></div>
         <div class="col-md-4"></div>
     </div>
 </div>

@@ -34,7 +34,7 @@ public class Lobby {
     public void makeGameRooms(int size){
         System.out.print("Games ");
         for (int i = 0; i < size; i++) {
-            Game game = new Game(i, 0);
+            Game game = new Game(i, 1);
             games.add(game);
             Thread thread = new Thread(game);
             thread.start();

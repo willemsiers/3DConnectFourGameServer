@@ -73,7 +73,7 @@ public class SimpleClient implements Runnable {
                 case CONNECT:
 //                    String name = this.getUserInput("Choose")
                     if (state == ClientState.DISCONNECTED) {
-                        String name = "RogierBot" + ((int) (Math.random() * 1000));
+                        String name = "RogierAISuper" + ((int) (Math.random() * 1000));
                         String host = this.getUserInput("Input host");
                         int port = Integer.parseInt(this.getUserInput("Input port"));
                         this.connect(name, host, port);
@@ -365,6 +365,11 @@ public class SimpleClient implements Runnable {
     }
 
     public void makeMove() {
+//        try {
+//            Thread.sleep(18000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         JSONObject obj1 = new JSONObject();
         Move move = clientGame.getRandomMove();
         System.out.println("Move: " + move.toString());

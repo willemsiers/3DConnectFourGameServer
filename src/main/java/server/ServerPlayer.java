@@ -175,6 +175,14 @@ public class ServerPlayer implements Runnable, Player {
     }
 
 
+    private void moveTimeOut() {
+        sendError("time elapsed", "move took too long");
+        lobby.exitGame(this);
+        sendLobbyStatus();
+        state = ServerEvents.LOBBY;
+    }
+
+
     private boolean isConnected() throws IOException {
         return connected && socket.getInetAddress().isReachable(500);
     }
@@ -231,7 +239,7 @@ public class ServerPlayer implements Runnable, Player {
             Thread.currentThread().interrupt();
         }
         lock.unlock();
-        System.out.println("Move received: " + lastMessage.getMove() + " from player" + name);
+        System.out.println("Move received: " + lastMessage.getMove() + " from player " + name);
         return lastMessage.getMove();
     }
 
@@ -272,11 +280,7 @@ public class ServerPlayer implements Runnable, Player {
         @Override
         public void run() {
             if (!moveReceived.get()) {
-                try {
-                    exitGame();
-                } catch (WrongMessageException e) {
-                    e.printStackTrace();
-                }
+                moveTimeOut();
             }
         }
     }

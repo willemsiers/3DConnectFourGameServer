@@ -84,7 +84,6 @@ public class Game implements Runnable {
             }
         }
 
-        System.out.println(((System.currentTimeMillis() / 1000) - startTime));
         return false;
     }
 
@@ -127,11 +126,12 @@ public class Game implements Runnable {
                     winner = "draw";
                     player1.announceWinner("draw", null);
                     player2.announceWinner("draw", null);
+                    System.out.println("Game " + id + " ended. Winner: " + winner);
                 } else {
-                    System.out.println(board.toString());
+//                    System.out.println(board.toString());
                     winningMove = board.getWinningMove();
-                    System.out.println("Winning move:" + Arrays.deepToString(winningMove));
                     winner = turn == 0 ? player1.getName() : player2.getName();
+                    System.out.println("Game " + id + " ended. Winner: " + winner + " Winning move:" + Arrays.deepToString(winningMove));
                     player1.announceWinner(turn == 0 ? "you" : "opponent", winningMove);
                     player2.announceWinner(turn == 0 ? "opponent" : "you", winningMove);
                 }

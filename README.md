@@ -1,6 +1,6 @@
 # 3D Connect Four game.Game GameServer
 Updated: 16-12-2016
-Version: 0.4.1
+Version: 0.5.2
 
 
 ## Usage
@@ -127,8 +127,6 @@ Timeouts happen in any state of a serverPlayer, below is the table for approxima
 
 | State | Maximum | Action by server |
 | ----- | ------- | ---------------- |
-| Lobby | 600 s | Disconnected client |
-| Game | 180 s | Put into the lobby |
 | Make move | 15 s| Random move made for this client, opponents' turn |
 | End of game | 180 s | Put into the lobby |
 
