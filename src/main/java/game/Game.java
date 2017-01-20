@@ -34,8 +34,11 @@ public class Game implements Runnable {
 
     private String winner;
 
-    public Game(int id) {
+    private int secondsBetweenMove;
+
+    public Game(int id, int secondsBetweenMove) {
         this.id = id;
+        this.secondsBetweenMove = secondsBetweenMove;
         init();
     }
 
@@ -102,7 +105,7 @@ public class Game implements Runnable {
                 }
                 while (!board.gameOver(lastMove)) {
                     try {
-                        Thread.sleep(2000);
+                        Thread.sleep(secondsBetweenMove * 1000);
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
                     }
@@ -145,7 +148,12 @@ public class Game implements Runnable {
     }
 
     private Move player1Move() {
-        Move move = new Move(player1.requestMove(), GridMark.RED);
+        String moveString = player1.requestMove();
+        if (moveString == null) {
+            System.out.println("Player 1 " + player1);
+            System.out.println("Player 2 " + player2);
+        }
+        Move move = new Move(moveString, GridMark.RED);
         while (!board.isValidMove(move)) {
             move = new Move(player1.moveDenied(), GridMark.RED);
         }
@@ -155,7 +163,12 @@ public class Game implements Runnable {
     }
 
     private Move player2Move() {
-        Move move = new Move(player2.requestMove(), GridMark.YELLOW);
+        String moveString = player2.requestMove();
+        if (moveString == null) {
+            System.out.println("Player 1 " + player1);
+            System.out.println("Player 2 " + player2);
+        }
+        Move move = new Move(moveString, GridMark.YELLOW);
         while (!board.isValidMove(move)) {
             move = new Move(player2.moveDenied(), GridMark.YELLOW);
         }
@@ -235,6 +248,14 @@ public class Game implements Runnable {
         } else if (player == player2) {
             player2 = null;
         }
+    }
+
+    public Player getPlayer1() {
+        return player1;
+    }
+
+    public Player getPlayer2() {
+        return player2;
     }
 }
 

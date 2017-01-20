@@ -11,7 +11,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>GameServlet</servlet-name>
-        <url-pattern>/</url-pattern>
+        <url-pattern>/games</url-pattern>
     </servlet-mapping>
 
 </web-app>

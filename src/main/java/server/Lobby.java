@@ -37,7 +37,7 @@ public class Lobby {
     public void makeGameRooms(int size){
         System.out.print("Games ");
         for (int i = 0; i < size; i++) {
-            Game game = new Game(i);
+            Game game = new Game(i, 0);
             games.add(game);
             Thread thread = new Thread(game);
             thread.start();
@@ -143,14 +143,17 @@ public class Lobby {
         Thread thread = gameThreads.get(gameIndex);
 
         Game game = games.get(gameIndex);
-        game.removePlayer(serverPlayer);
+        Player otherPlayer = game.otherPlayer(serverPlayer);
+
+
         if (game.isStarted()){
             thread.interrupt();
-            game.otherPlayer(serverPlayer).announceWinner(game.otherPlayer(serverPlayer).getName(), null);
-            if (game.otherPlayer(serverPlayer) instanceof ServerPlayer) {
-                roomPlayers.remove(game.otherPlayer(serverPlayer));
+            otherPlayer.announceWinner("you", null);
+            if (otherPlayer instanceof ServerPlayer) {
+                roomPlayers.remove(otherPlayer);
             }
         }
+        game.removePlayer(serverPlayer);
         roomPlayers.remove(serverPlayer);
         thread = new Thread(game);
         games.set(gameIndex, game);

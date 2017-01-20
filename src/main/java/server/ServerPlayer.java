@@ -104,6 +104,7 @@ public class ServerPlayer implements Runnable, Player {
 
         try {
             if (state != ServerEvents.DISCONNECTED) {
+                System.out.println("Trying to disconnect player: " + this.getName());
                 lobby.disconnectPlayer(this);
                 socket.close();
                 System.out.println("Closed socket");
@@ -222,6 +223,7 @@ public class ServerPlayer implements Runnable, Player {
             Thread.currentThread().interrupt();
         }
         lock.unlock();
+        System.out.println("Move received: " + lastMessage.getMove() + " from player" + name);
         return lastMessage.getMove();
     }
 

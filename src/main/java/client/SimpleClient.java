@@ -153,15 +153,18 @@ public class SimpleClient implements Runnable {
                 e.printStackTrace();
             }
             if (type == MessageType.GAME_OVER) {
+                System.out.println("Game over");
                 break;
             } else if (type == MessageType.MOVE) {
-//                if (moveCount > 20){
-//                    try {
-//                        Thread.sleep(16000);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
-//                }
+                if (moveCount > 10) {
+                    System.exit(0);
+                    try {
+                        Thread.sleep(16000);
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 this.makeMove();
             } else {
@@ -172,7 +175,7 @@ public class SimpleClient implements Runnable {
         }
         System.out.println("Game over!");
         System.out.println("The winner is: " + object.get("winner"));
-        this.exitGame();
+//        this.exitGame();
         this.disconnect();
     }
 

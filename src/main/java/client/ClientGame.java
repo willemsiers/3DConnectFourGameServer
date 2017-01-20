@@ -37,8 +37,25 @@ public class ClientGame {
         }
 
         int index = random.nextInt(movePool.size());
+//        System.out.println(board.toString());
+        List<Move> bestMovePool = new ArrayList<>();
+        for (Move move : movePool) {
+            if (board.isWinner(move)) {
+                bestMovePool.add(move);
+            } else if (board.isWinner(new Move(move.getX(), move.getY(), GridMark.YELLOW))) {
+                bestMovePool.add(move);
+            }
+        }
+//        System.out.println(movePool.toString());
 
-        return movePool.get(index);
+        if (bestMovePool.size() > 0) {
+            board.makeMove(bestMovePool.get(0));
+            return bestMovePool.get(0);
+        } else {
+            board.makeMove(movePool.get(index));
+            return movePool.get(index);
+        }
+
     }
 
     public void enterMove(String moveString) {
