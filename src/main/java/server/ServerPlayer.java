@@ -60,6 +60,7 @@ public class ServerPlayer implements Runnable, Player {
                         lastMessage = new ClientMessage(userInput);
                         switch (lastMessage.getAction()) {
                             case CONNECT:
+
                                 this.connect();
                                 break;
                             case JOIN:
@@ -80,7 +81,6 @@ public class ServerPlayer implements Runnable, Player {
                                 }
                                 break;
                             case RESTART:
-                                System.out.println(state);
                                 System.out.println("Player " + name + "wants to restart");
                                 state = ServerEvents.RESTARTED;
                                 break;
@@ -164,11 +164,14 @@ public class ServerPlayer implements Runnable, Player {
     }
 
     private void exitGame() throws WrongMessageException {
-        if (state != ServerEvents.GAME && state != ServerEvents.STARTED && state != ServerEvents.RESTARTED && state != ServerEvents.MAKE_MOVE) {
+        if (state == ServerEvents.GAME || state == ServerEvents.STARTED
+                || state == ServerEvents.RESTARTED || state == ServerEvents.MAKE_MOVE || state == ServerEvents.GAME_OVER) {
+            lobby.exitGame(this);
+            this.sendLobbyStatus();
+        } else {
             throw new WrongMessageException();
         }
-        lobby.exitGame(this);
-        this.sendLobbyStatus();
+
     }
 
 
