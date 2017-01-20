@@ -4,13 +4,10 @@ import game.Game;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.regex.Pattern;
 
 /**
  * Created by Rogier on 16-12-16 in Enschede.
@@ -48,22 +45,11 @@ public class Lobby {
     }
 
     public boolean addPlayerToLobby(ServerPlayer serverPlayer) {
-        if (!Pattern.matches("([a-zA-Z]|[0-9])*", serverPlayer.getName()) || serverPlayer.getName().length() > 16 || serverPlayer.getName().equals("No player1 yet")) {
-            return false;
-        }
-
         lock.lock();
         for (ServerPlayer player : serverPlayers) {
             if (player.getName().equals(serverPlayer.getName())) {
                 lock.unlock();
                 return false;
-            } else try {
-                if (player.getInetAddress().equals(serverPlayer.getInetAddress()) && !player.getInetAddress().equals(InetAddress.getLocalHost())) {
-                    lock.unlock();
-                    return false;
-                }
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
             }
         }
         serverPlayers.add(serverPlayer);

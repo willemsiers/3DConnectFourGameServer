@@ -57,7 +57,7 @@
         getData = function (game_id) {
             var xmlHttp = null;
             xmlHttp = new XMLHttpRequest();
-            xmlHttp.open("GET", window.location.hostname + ":8080/games?action=game&id=" + game_id, false);
+            xmlHttp.open("GET", "/games?action=game&id=" + game_id, false);
             xmlHttp.send(null);
             var data = $.parseJSON(xmlHttp.responseText);
             return data;

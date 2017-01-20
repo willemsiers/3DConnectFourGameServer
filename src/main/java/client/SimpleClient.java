@@ -15,22 +15,25 @@ import java.nio.charset.StandardCharsets;
  * Created by Rogier on 19-12-16.
  */
 public class SimpleClient implements Runnable {
+    private static final int CONNECT = 1;
+    private static final int JOIN = 2;
+    private static final int START = 3;
+    private static final int RESTART = 4;
+    private static final int EXIT = 5;
+    private static final int DISCONNECT = 6;
+
+    private ClientState state;
+
+
     private Socket socket;
     private BufferedReader reader;
     private PrintWriter out;
     private ClientGame clientGame;
 
 
-    public SimpleClient(int port) {
-        try {
-            socket = new Socket(InetAddress.getLocalHost(), port);
-            reader = new BufferedReader(new InputStreamReader(new DataInputStream(socket.getInputStream())));
-            out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public SimpleClient() {
+        state = ClientState.DISCONNECTED;
     }
-
 
     public JSONObject getServerMessage() {
         JSONObject object = null;
@@ -60,65 +63,134 @@ public class SimpleClient implements Runnable {
         return result;
     }
 
-
     public void run() {
-//        String name = getUserInput("Enter your name");
-        String name = "Rogier" + ((int) (Math.random() * 1000));
-        this.connect(name);
+        boolean running = true;
+        JSONObject response;
+        MessageType type;
+        while (running) {
+            int choice = typeCommand();
+            switch (choice) {
+                case CONNECT:
+//                    String name = this.getUserInput("Choose")
+                    if (state == ClientState.DISCONNECTED) {
+                        String name = "RogierBot" + ((int) (Math.random() * 1000));
+                        String host = this.getUserInput("Input host");
+                        int port = Integer.parseInt(this.getUserInput("Input port"));
+                        this.connect(name, host, port);
+                    } else {
+                        this.connectForLobby();
+                    }
+
+                    response = getServerMessage();
+                    type = MessageType.fromString(response.get("event").toString(), "");
+                    if (type == MessageType.LOBBY) {
+                        JSONArray array = (JSONArray) response.get("free lobbies");
+                        for (Object anArray : array) {
+                            JSONObject obj = (JSONObject) anArray;
+                            System.out.println("Game number: " + obj.get("room number") + " against: " + obj.get("opponent"));
+                        }
+                        state = ClientState.LOBBY;
+                    } else {
+                        System.out.println(response);
+                    }
+                    break;
+                case JOIN:
+                    int gameNumber = -1;
+                    while (gameNumber == -1) {
+                        try {
+                            gameNumber = Integer.parseInt(getUserInput("Choose game number..."));
+                        } catch (NumberFormatException e) {
+                            System.out.println("Not a number");
+                        }
+                    }
+                    this.join(gameNumber);
+                    response = getServerMessage();
+                    type = MessageType.fromString(response.get("event").toString(), "");
+                    if (type == MessageType.GAME) {
+                        System.out.println("Opponent: " + response.get("opponent"));
+                        state = ClientState.GAME;
+                    } else if (type == MessageType.ERROR) {
+                        if (MessageType.fromString(response.get("event").toString(), response.get("reason").toString())
+                                == MessageType.GAME_FULL) {
+                            System.out.println("Room full");
+                            this.connectForLobby();
+                        }
+                        state = ClientState.LOBBY;
+                    }
+                    break;
+                case START:
+
+                    this.startGame();
+
+                    response = getServerMessage();
+                    type = MessageType.fromString(response.get("event").toString(), "");
+
+                    if (type == MessageType.STARTED) {
+                        System.out.println("Game started... against " + response.get("opponent").toString());
+                        this.play();
+                        state = ClientState.GAME_OVER;
+                    } else if (type == MessageType.LOBBY) {
+                        JSONArray array = (JSONArray) response.get("free lobbies");
+                        for (Object anArray : array) {
+                            JSONObject obj = (JSONObject) anArray;
+                            System.out.println("Game number: " + obj.get("room number") + " against: " + obj.get("opponent"));
+                        }
+                        state = ClientState.LOBBY;
+                    } else {
+                        System.out.println("impossible -1");
+                    }
+
+
+                    break;
+                case RESTART:
+                    this.restartGame();
+
+
+                    response = getServerMessage();
+                    type = MessageType.fromString(response.get("event").toString(), "");
+
+                    if (type == MessageType.STARTED) {
+                        System.out.println("Game restarted... against " + response.get("opponent").toString());
+                        this.play();
+                        state = ClientState.GAME_OVER;
+                    } else if (type == MessageType.LOBBY) {
+                        JSONArray array = (JSONArray) response.get("free lobbies");
+                        for (Object anArray : array) {
+                            JSONObject obj = (JSONObject) anArray;
+                            System.out.println("Game number: " + obj.get("room number") + " against: " + obj.get("opponent"));
+                        }
+                        state = ClientState.LOBBY;
+                    } else {
+                        System.out.println("impossible -1");
+                    }
+                    break;
+                case EXIT:
+                    this.exitGame();
+                    response = getServerMessage();
+                    type = MessageType.fromString(response.get("event").toString(), "");
+
+                    if (type == MessageType.LOBBY) {
+                        JSONArray array = (JSONArray) response.get("free lobbies");
+                        for (Object anArray : array) {
+                            JSONObject obj = (JSONObject) anArray;
+                            System.out.println("Game number: " + obj.get("room number") + " against: " + obj.get("opponent"));
+                        }
+                        state = ClientState.LOBBY;
+                    }
+                    break;
+                case DISCONNECT:
+                    this.disconnect();
+                    running = false;
+                    break;
+            }
+
+
+        }
+    }
+
+    public void play() {
         JSONObject object = getServerMessage();
-
-        while (MessageType.fromString(object.get("event").toString(), "") != MessageType.LOBBY) {
-            System.out.println(object.get("event").toString());
-            connect(name);
-            object = getServerMessage();
-        }
-        JSONArray array = (JSONArray) object.get("free lobbies");
-        for (Object anArray : array) {
-            JSONObject obj = (JSONObject) anArray;
-            System.out.println("Game number: " + obj.get("room number") + " against: " + obj.get("opponent"));
-        }
-
-
-        while (MessageType.fromString(object.get("event").toString(), "") != MessageType.GAME) {
-            try {
-                Thread.sleep(3000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            int gameNumber = -1;
-            while (gameNumber == -1) {
-
-                gameNumber = Integer.parseInt(getUserInput("Choose game number..."));
-
-            }
-            this.join(gameNumber);
-            object = getServerMessage();
-            if (MessageType.fromString(object.get("event").toString(), "") == MessageType.ERROR) {
-                System.out.println(object);
-            }
-        }
-
-        System.out.println("Opponent: " + object.get("opponent"));
-        boolean start = true;
-        while (!start) {
-            String answer = getUserInput("Ready to start: Y/N");
-            if (answer.equals("Y")) {
-                start = true;
-            }
-        }
-        this.startGame();
-
-        object = getServerMessage();
         MessageType type = MessageType.fromString(object.get("event").toString(), "");
-
-        if (type == MessageType.STARTED) {
-            System.out.println("Game started... against " + object.get("opponent").toString());
-        } else {
-            System.out.println("impossible -1");
-        }
-
-        object = getServerMessage();
-        type = MessageType.fromString(object.get("event").toString(), "");
 
         if (type == MessageType.MOVE) {
             this.makeMove();
@@ -128,7 +200,7 @@ public class SimpleClient implements Runnable {
             if (MessageType.fromString(object.get("event").toString(), "") == MessageType.MOVE) {
                 this.makeMove();
             } else {
-                System.out.println("impossible 0");
+                System.out.println("impossible 00");
             }
         } else {
             System.out.println(type);
@@ -139,6 +211,7 @@ public class SimpleClient implements Runnable {
         while (type != MessageType.GAME_OVER) {
             moveCount++;
             if (type == MessageType.OPPONENT_MOVED) {
+//                System.out.println(object);
                 clientGame.enterMove(object.get("move").toString());
             } else {
                 System.out.println("impossible 1: " + type);
@@ -156,15 +229,7 @@ public class SimpleClient implements Runnable {
                 System.out.println("Game over");
                 break;
             } else if (type == MessageType.MOVE) {
-                if (moveCount > 10) {
-                    System.exit(0);
-                    try {
-                        Thread.sleep(16000);
 
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
 
                 this.makeMove();
             } else {
@@ -175,16 +240,97 @@ public class SimpleClient implements Runnable {
         }
         System.out.println("Game over!");
         System.out.println("The winner is: " + object.get("winner"));
-//        this.exitGame();
-        this.disconnect();
     }
 
     public boolean isConnected() {
         return socket.isConnected();
     }
 
+    public int typeCommand() {
+        boolean correctInput = false;
+        int choice = 0;
+        String command = "";
+        while (!correctInput) {
+            command = getUserInput("Choose command: \n" + getPossibleCommands());
+            correctInput = correctCommand(command);
+        }
+        switch (command) {
+            case "connect":
+                choice = CONNECT;
+                break;
+            case "join":
+                choice = JOIN;
+                break;
+            case "start":
+                choice = START;
+                break;
+            case "restart":
+                choice = RESTART;
+                break;
+            case "exit":
+                choice = EXIT;
+                break;
+            case "disconnect":
+                choice = DISCONNECT;
+                break;
+            default:
+                break;
 
-    public void connect(String name) {
+        }
+        return choice;
+    }
+
+    private String getPossibleCommands() {
+        switch (state) {
+            case DISCONNECTED:
+                return "[connect]";
+            case LOBBY:
+                return "[connect,join,disconnect]";
+            case GAME:
+                return "[start,exit,disconnect]";
+            case GAME_OVER:
+                return "[restart,exit,disconnect]";
+        }
+        return "no command";
+    }
+
+    private boolean correctCommand(String command) {
+        switch (state) {
+            case DISCONNECTED:
+                return command.equals("connect");
+            case LOBBY:
+                return command.equals("connect") || command.equals("join") || command.equals("disconnect");
+            case GAME:
+                return command.equals("start") || command.equals("exit") || command.equals("disconnect");
+            case GAME_OVER:
+                return command.equals("restart") || command.equals("exit") || command.equals("disconnect");
+
+        }
+        return false;
+    }
+
+    private void connectForLobby() {
+        JSONObject obj = new JSONObject();
+        obj.put("action", "connect");
+        out.println(obj.toJSONString());
+        out.flush();
+    }
+
+
+    public void connect(String name, String host, int port) {
+        try {
+            InetAddress address;
+            if (host == null) {
+                address = InetAddress.getLocalHost();
+            } else {
+                address = InetAddress.getByName(host);
+            }
+            socket = new Socket(address, port);
+            reader = new BufferedReader(new InputStreamReader(new DataInputStream(socket.getInputStream())));
+            out = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         JSONObject obj = new JSONObject();
         obj.put("action", "connect");
         obj.put("name", name);
@@ -204,6 +350,15 @@ public class SimpleClient implements Runnable {
         clientGame = new ClientGame();
         JSONObject obj1 = new JSONObject();
         obj1.put("action", "start");
+        out.println(obj1.toJSONString());
+        out.flush();
+
+    }
+
+    public void restartGame() {
+        clientGame = new ClientGame();
+        JSONObject obj1 = new JSONObject();
+        obj1.put("action", "restart");
         out.println(obj1.toJSONString());
         out.flush();
 
@@ -242,9 +397,8 @@ public class SimpleClient implements Runnable {
 
 
     public static void main(String[] args) {
-        SimpleClient client = new SimpleClient(9090);
+        SimpleClient client = new SimpleClient();
         client.run();
-//        client.disconnect();
 
     }
 

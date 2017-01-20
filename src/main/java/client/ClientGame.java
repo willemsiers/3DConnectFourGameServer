@@ -35,14 +35,24 @@ public class ClientGame {
                 }
             }
         }
-
+//        System.out.println(movePool);
         int index = random.nextInt(movePool.size());
 //        System.out.println(board.toString());
         List<Move> bestMovePool = new ArrayList<>();
         for (Move move : movePool) {
+            if (board.getGrid()[move.getX()][move.getY()][0] == GridMark.EMPTY) {
+                move.setZ(0);
+            } else if (board.getGrid()[move.getX()][move.getY()][1] == GridMark.EMPTY) {
+                move.setZ(1);
+            } else if (board.getGrid()[move.getX()][move.getY()][2] == GridMark.EMPTY) {
+                move.setZ(2);
+            } else if (board.getGrid()[move.getX()][move.getY()][3] == GridMark.EMPTY) {
+                move.setZ(3);
+            }
             if (board.isWinner(move)) {
                 bestMovePool.add(move);
-            } else if (board.isWinner(new Move(move.getX(), move.getY(), GridMark.YELLOW))) {
+            } else if (board.isWinner(new Move(move.getX(), move.getY(), move.getZ(), GridMark.YELLOW))) {
+
                 bestMovePool.add(move);
             }
         }
@@ -50,6 +60,7 @@ public class ClientGame {
 
         if (bestMovePool.size() > 0) {
             board.makeMove(bestMovePool.get(0));
+//            System.out.println(bestMovePool.toString());
             return bestMovePool.get(0);
         } else {
             board.makeMove(movePool.get(index));

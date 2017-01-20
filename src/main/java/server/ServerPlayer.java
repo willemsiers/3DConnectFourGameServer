@@ -80,7 +80,9 @@ public class ServerPlayer implements Runnable, Player {
                                 }
                                 break;
                             case RESTART:
-                                state = ServerEvents.STARTED;
+                                System.out.println(state);
+                                System.out.println("Player " + name + "wants to restart");
+                                state = ServerEvents.RESTARTED;
                                 break;
                             case EXIT_GAME:
                                 exitGame();
@@ -94,7 +96,7 @@ public class ServerPlayer implements Runnable, Player {
                 } catch (IOException e) {
                     connected = false;
                 } catch (WrongMessageException e) {
-                    System.out.println("Wrong message received");
+                    System.out.println("Wrong message received " + lastMessage.toString() + " with state " + state);
                     this.sendError("missing keys", "invalid keys used");
                 }
             }
@@ -118,10 +120,12 @@ public class ServerPlayer implements Runnable, Player {
     }
 
     private void connect() throws WrongMessageException {
-        if (state != ServerEvents.DISCONNECTED && state != ServerEvents.LOBBY) {
-            throw new WrongMessageException();
+        if (state == ServerEvents.LOBBY) {
+            this.sendLobbyStatus();
         } else if (state == ServerEvents.DISCONNECTED) {
-
+            if (lastMessage.getName() == null) {
+                throw new WrongMessageException();
+            }
             this.name = lastMessage.getName();
             boolean validName = lobby.addPlayerToLobby(this);
             if (validName) {
@@ -138,7 +142,7 @@ public class ServerPlayer implements Runnable, Player {
                 }
             }
         } else {
-            this.sendLobbyStatus();
+            throw new WrongMessageException();
         }
     }
 
@@ -164,6 +168,7 @@ public class ServerPlayer implements Runnable, Player {
             throw new WrongMessageException();
         }
         lobby.exitGame(this);
+        this.sendLobbyStatus();
     }
 
 
@@ -242,6 +247,7 @@ public class ServerPlayer implements Runnable, Player {
     }
 
     public void announceWinner(String winner, String[] winningMove) {
+        state = ServerEvents.GAME_OVER;
         String json = ServerMessage.sendGameOver(winner, winningMove);
         this.out.println(json);
         this.out.flush();

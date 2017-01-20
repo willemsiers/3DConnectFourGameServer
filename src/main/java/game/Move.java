@@ -31,6 +31,13 @@ public final class Move {
     }
 
 
+    public Move(int x, int y, int z, GridMark mark) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.mark = mark;
+    }
+
     public int getY() {
         return y;
     }

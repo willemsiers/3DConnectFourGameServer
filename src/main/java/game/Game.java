@@ -73,11 +73,18 @@ public class Game implements Runnable {
 
     private boolean playersWantRestart() {
         double startTime = System.currentTimeMillis() / 1000;
-        while ((System.currentTimeMillis() / 1000) - startTime < 180) {
+        while (((System.currentTimeMillis() / 1000) - startTime) < 180) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             if (player1 != null && player2 != null && player1.wantsToRestart() && player2.wantsToRestart()) {
                 return true;
             }
         }
+
+        System.out.println(((System.currentTimeMillis() / 1000) - startTime));
         return false;
     }
 
