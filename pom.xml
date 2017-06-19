@@ -8,6 +8,7 @@
     <artifactId>3DConnectFourGameServer</artifactId>
     <version>1.0-SNAPSHOT</version>
     <build>
+    	<!-- PUSH FOR AUTOMATIC BUILD? -->
         <plugins>
         	<plugin>
             <groupId>org.codehaus.mojo</groupId>
