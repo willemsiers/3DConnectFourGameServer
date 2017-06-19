@@ -11,7 +11,6 @@ public class MyTest {
 
 		Board board = new Board();
 		Move move = new Move(4, 0, GridMark.RED);
-		System.out.println(board.isValidMove(move));
 		board.makeMove(new Move(0, 0, GridMark.RED));
 		board.makeMove(new Move(0, 0, GridMark.RED));
 		board.makeMove(new Move(0, 0, GridMark.RED));
