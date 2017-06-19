@@ -42,11 +42,11 @@ public class Game implements Runnable {
         init();
     }
 
-    public int numberOfPlayers(){
+    public int numberOfPlayers() {
         return (player1 != null ? 1 : 0) + (player2 != null ? 1 : 0);
     }
 
-    public boolean start(){
+    public boolean start() {
         return (player1 != null && player1.wantsToStart()) &&
                 (player2 != null && player2.wantsToStart());
     }
@@ -88,8 +88,7 @@ public class Game implements Runnable {
     }
 
 
-
-    public void run(){
+    public void run() {
         while (true) {
             this.init();
             this.waitForAllPlayers();
@@ -186,7 +185,7 @@ public class Game implements Runnable {
     }
 
 
-    public String getPlayer1Name(){
+    public String getPlayer1Name() {
         if (player1 != null) {
             return player1.getName();
         } else if (!available) {
@@ -196,7 +195,7 @@ public class Game implements Runnable {
         }
     }
 
-    public String getPlayer2Name(){
+    public String getPlayer2Name() {
         if (player2 != null) {
             return player2.getName();
         } else if (!available) {
@@ -234,7 +233,7 @@ public class Game implements Runnable {
         return winner;
     }
 
-    public void makeMove(Move move){
+    public void makeMove(Move move) {
         board.makeMove(move);
     }
 

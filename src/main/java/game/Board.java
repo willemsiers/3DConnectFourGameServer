@@ -53,14 +53,14 @@ public class Board {
      * 3D
      */
 
-    private static final int[] DD1 = new int[]{1,1,1};
-    private static final int[] DD2 = new int[]{-1,-1,-1};
-    private static final int[] DD3 = new int[]{1,1,-1};
-    private static final int[] DD4 = new int[]{-1,-1,1};
-    private static final int[] DD5 = new int[]{1,-1,1};
-    private static final int[] DD6 = new int[]{-1,1,-1};
-    private static final int[] DD7 = new int[]{-1,1,1};
-    private static final int[] DD8 = new int[]{1,-1,-1};
+    private static final int[] DD1 = new int[]{1, 1, 1};
+    private static final int[] DD2 = new int[]{-1, -1, -1};
+    private static final int[] DD3 = new int[]{1, 1, -1};
+    private static final int[] DD4 = new int[]{-1, -1, 1};
+    private static final int[] DD5 = new int[]{1, -1, 1};
+    private static final int[] DD6 = new int[]{-1, 1, -1};
+    private static final int[] DD7 = new int[]{-1, 1, 1};
+    private static final int[] DD8 = new int[]{1, -1, -1};
 
     private static final int[][] axis10 = new int[][]{DD1, DD2};
     private static final int[][] axis11 = new int[][]{DD3, DD4};
@@ -100,13 +100,13 @@ public class Board {
 
     public static void main(String[] args) {
         Board board = new Board();
-        Move move = new Move(4, 0,GridMark.RED);
+        Move move = new Move(4, 0, GridMark.RED);
         System.out.println(board.isValidMove(move));
-        board.makeMove(new Move(0, 0,GridMark.RED));
-        board.makeMove(new Move(0, 0,GridMark.RED));
-        board.makeMove(new Move(0, 0,GridMark.RED));
+        board.makeMove(new Move(0, 0, GridMark.RED));
+        board.makeMove(new Move(0, 0, GridMark.RED));
+        board.makeMove(new Move(0, 0, GridMark.RED));
         board.makeMove(new Move(1, 2, GridMark.YELLOW));
-        Move last = new Move(0, 0,GridMark.RED);
+        Move last = new Move(0, 0, GridMark.RED);
         board.makeMove(last);
         System.out.println("Winner? " + board.isWinner(last));
         System.out.println(Arrays.deepToString(board.grid));
@@ -124,7 +124,7 @@ public class Board {
         return x >= 0 && x < GRID_SIZE_X && y >= 0 && y < GRID_SIZE_Y && grid[x][y][3] == GridMark.EMPTY;
     }
 
-    public boolean isValidSlot(int x, int y, int z){
+    public boolean isValidSlot(int x, int y, int z) {
         return x >= 0 && x < GRID_SIZE_X && y >= 0 && y < GRID_SIZE_Y && z >= 0 && z < GRID_SIZE_Z;
     }
 

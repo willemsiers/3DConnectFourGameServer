@@ -8,15 +8,14 @@ import java.util.List;
 
 /**
  * Created by Rogier on 19-12-16.
- *
  */
 public class ServerMessage {
 
-    public static String sendLobbyStatus(List<String> freeLobbies){
+    public static String sendLobbyStatus(List<String> freeLobbies) {
         JSONObject obj = new JSONObject();
         obj.put("event", "lobby");
         JSONArray array = new JSONArray();
-        for (int i = 0; i < freeLobbies.size(); i++){
+        for (int i = 0; i < freeLobbies.size(); i++) {
             if (freeLobbies.get(i) != null) {
                 JSONObject obj1 = new JSONObject();
                 obj1.put("room number", i);
@@ -25,12 +24,12 @@ public class ServerMessage {
             }
 
         }
-        obj.put("free lobbies" , array);
+        obj.put("free lobbies", array);
         obj.put("message", "lobby message");
         return obj.toJSONString();
     }
 
-    public static String sendGameStatus(String opponentName){
+    public static String sendGameStatus(String opponentName) {
         JSONObject obj = new JSONObject();
         obj.put("event", "game");
         obj.put("opponent", opponentName);
@@ -47,14 +46,14 @@ public class ServerMessage {
         return obj.toJSONString();
     }
 
-    public static String sendMakeMove(){
+    public static String sendMakeMove() {
         JSONObject obj = new JSONObject();
         obj.put("event", "make move");
         obj.put("message", "make move message");
         return obj.toJSONString();
     }
 
-    public static String sendOpponentMoved(String move){
+    public static String sendOpponentMoved(String move) {
         JSONObject obj = new JSONObject();
         obj.put("event", "opponent moved");
         obj.put("move", move);
@@ -74,7 +73,6 @@ public class ServerMessage {
         } else {
             obj.put("winning move", null);
         }
-
 
 
         obj.put("message", "lost message");

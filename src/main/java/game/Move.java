@@ -24,7 +24,7 @@ public final class Move {
         }
     }
 
-    public Move(int x, int y, GridMark mark){
+    public Move(int x, int y, GridMark mark) {
         this.x = x;
         this.y = y;
         this.mark = mark;
@@ -46,11 +46,11 @@ public final class Move {
         return x;
     }
 
-    public void setZ(int z){
+    public void setZ(int z) {
         this.z = z;
     }
 
-    public int getZ(){
+    public int getZ() {
         return z;
     }
 
@@ -60,7 +60,7 @@ public final class Move {
 
     @Override
     public String toString() {
-        switch (y){
+        switch (y) {
             case 0:
                 return "a" + x;
             case 1:
