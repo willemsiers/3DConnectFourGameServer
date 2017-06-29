@@ -1,6 +1,6 @@
 # 3D Connect Four game.Game GameServer
 Updated: 16-12-2016
-Version: 0.5.2
+Version: 0.5.3
 
 
 ## Usage
