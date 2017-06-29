@@ -8,7 +8,6 @@ public class MyTest {
 
     @Test
     public void testPrintHelloWorld() {
-
         Board board = new Board();
         Move move = new Move(4, 0, GridMark.RED);
         board.makeMove(new Move(0, 0, GridMark.RED));
@@ -18,7 +17,6 @@ public class MyTest {
         Move last = new Move(0, 0, GridMark.RED);
         board.makeMove(last);
         Assert.assertTrue(board.isWinner(last));
-
     }
 
 }
