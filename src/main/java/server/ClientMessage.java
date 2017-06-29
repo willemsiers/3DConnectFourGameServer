@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 /**
  * Created by Rogier on 17-12-16 in Enschede.
  */
-public class ClientMessage  {
+public class ClientMessage {
     private ClientAction action;
     private String move;
     private int lobbyNumber;
@@ -19,11 +19,11 @@ public class ClientMessage  {
         JSONParser parser = new JSONParser();
         try {
             Object obj = parser.parse(object);
-            action = ClientAction.fromString(((JSONObject)obj).get("action").toString());
-            switch (action){
+            action = ClientAction.fromString(((JSONObject) obj).get("action").toString());
+            switch (action) {
                 case CONNECT:
-                    Object nameString = ((JSONObject)obj).get("name");
-                    if (nameString != null){
+                    Object nameString = ((JSONObject) obj).get("name");
+                    if (nameString != null) {
                         String tempName = nameString.toString();
                         if (!Pattern.matches("([a-zA-Z]|[0-9])*", tempName)
                                 || tempName.length() > 16 || tempName.equals("No player1 yet")) {
@@ -34,9 +34,9 @@ public class ClientMessage  {
                     }
                     break;
                 case JOIN:
-                    Object lob = ((JSONObject)obj).get("room number");
-                    if (lob != null){
-                        Long l = (Long)lob;
+                    Object lob = ((JSONObject) obj).get("room number");
+                    if (lob != null) {
+                        Long l = (Long) lob;
                         lobbyNumber = l.intValue();
                         break;
                     } else {
@@ -46,9 +46,9 @@ public class ClientMessage  {
                 case START:
                     break;
                 case MOVE:
-                    Object moveString = ((JSONObject)obj).get("move");
-                    if (moveString != null){
-                        move = (String)moveString;
+                    Object moveString = ((JSONObject) obj).get("move");
+                    if (moveString != null) {
+                        move = (String) moveString;
                         break;
                     } else {
                         throw new WrongMessageException();

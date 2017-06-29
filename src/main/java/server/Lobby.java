@@ -31,7 +31,7 @@ public class Lobby {
     }
 
 
-    public void makeGameRooms(int size){
+    public void makeGameRooms(int size) {
         System.out.print("Games ");
         for (int i = 0; i < size; i++) {
             Game game = new Game(i, 1);
@@ -58,10 +58,10 @@ public class Lobby {
     }
 
 
-    public List<String> getFreeRooms(){
+    public List<String> getFreeRooms() {
         lock.lock();
         String[] result = new String[games.size()];
-        for (Game game : games){
+        for (Game game : games) {
             if (game.isAvailable()) {
                 result[game.getId()] = game.getPlayer1Name();
 
@@ -73,7 +73,7 @@ public class Lobby {
         return Arrays.asList(result);
     }
 
-    public String getOpponentName(int roomNumber){
+    public String getOpponentName(int roomNumber) {
         if (games.get(roomNumber).getPlayer2Name().equals("No player2 yet")) {
             return "No player2 yet";
         } else {
@@ -100,7 +100,7 @@ public class Lobby {
             roomFull = true;
         }
         lock.unlock();
-        if (roomFull){
+        if (roomFull) {
             return false;
         } else {
             roomPlayers.put(serverPlayer, roomNumber);
@@ -110,7 +110,7 @@ public class Lobby {
 
     public void disconnectPlayer(ServerPlayer serverPlayer) {
         lock.lock();
-        for (Game game : games){
+        for (Game game : games) {
             if (game.contains(serverPlayer)) {
                 this.exitGame(serverPlayer);
             }
@@ -132,7 +132,7 @@ public class Lobby {
         Player otherPlayer = game.otherPlayer(serverPlayer);
 
 
-        if (game.isStarted()){
+        if (game.isStarted()) {
             thread.interrupt();
             otherPlayer.announceWinner("you", null);
             if (otherPlayer instanceof ServerPlayer) {

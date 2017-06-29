@@ -8,7 +8,6 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 public class MyTest {
-
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 
@@ -61,5 +60,4 @@ public class MyTest {
 		board.makeMove(last);
 		Assert.assertTrue(board.isWinner(last));
 	}
-
 }

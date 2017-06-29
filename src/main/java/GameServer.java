@@ -16,7 +16,6 @@ public class GameServer implements Runnable {
     private boolean isStopped;
 
 
-
     private ServerSocket serverSocket;
 
 
@@ -31,7 +30,7 @@ public class GameServer implements Runnable {
     }
 
     public void run() {
-        while (!isStopped()){
+        while (!isStopped()) {
             Socket clientSocket;
             try {
                 clientSocket = serverSocket.accept();
@@ -48,7 +47,7 @@ public class GameServer implements Runnable {
     }
 
 
-    public void processClient(Socket clientSocket){
+    public void processClient(Socket clientSocket) {
         ServerPlayer serverPlayer = null;
         try {
             BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));

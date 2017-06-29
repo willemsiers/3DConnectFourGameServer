@@ -80,7 +80,6 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <configLocation>checks.xml</configLocation>
                     <failsOnError>false</failsOnError>
                     <failOnViolation>false</failOnViolation>
                     <violationSeverity>warning</violationSeverity>
