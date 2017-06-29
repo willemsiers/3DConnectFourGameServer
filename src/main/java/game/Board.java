@@ -83,6 +83,7 @@ public class Board {
     private GridMark[][][] grid;
 
     private Set<String> winningMove;
+    private GridMark winningPlayer = GridMark.EMPTY;
 
 	public Board() {
         grid = new GridMark[GRID_SIZE_X][GRID_SIZE_Y][GRID_SIZE_Z];
@@ -128,6 +129,9 @@ public class Board {
     }
 
     public void makeMove(Move move) {
+    	if(!isValidMove(move)){
+    		throw new IndexOutOfBoundsException(move.getX() + " exceeds the board size of "+CONNECT);
+	    }
 
         if (grid[move.getX()][move.getY()][0] == GridMark.EMPTY) {
             move.setZ(0);
@@ -139,6 +143,7 @@ public class Board {
             move.setZ(3);
         }
         grid[move.getX()][move.getY()][move.getZ()] = move.getMark();
+    	isWinner(move); //force update winningPlayer/winningMove
 
     }
 
@@ -153,6 +158,7 @@ public class Board {
             chainLength += checkDirection(origin, direction1, color);
             chainLength += checkDirection(origin, direction2, color);
             if (chainLength >= CONNECT) {
+            	winningPlayer = move.getMark();
                 return true;
             } else {
                 winningMove = new HashSet<>();
@@ -252,10 +258,10 @@ public class Board {
     }
 
     public GridMark getWinner() {
-    	return GridMark.EMPTY;
+    	return winningPlayer;
     }
 
 	public boolean isFinished() {
-		return false;
+		return getWinner() != GridMark.EMPTY;
 	}
 }
