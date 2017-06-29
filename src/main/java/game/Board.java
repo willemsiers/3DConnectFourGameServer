@@ -84,8 +84,7 @@ public class Board {
 
     private Set<String> winningMove;
 
-
-    public Board() {
+	public Board() {
         grid = new GridMark[GRID_SIZE_X][GRID_SIZE_Y][GRID_SIZE_Z];
         for (int i = 0; i < GRID_SIZE_X; i++) {
             for (int j = 0; j < GRID_SIZE_Y; j++) {
@@ -203,7 +202,6 @@ public class Board {
 
     public boolean gameOver(Move move) {
         return draw() || isWinner(move);
-
     }
 
 
@@ -252,4 +250,12 @@ public class Board {
         Arrays.sort(result);
         return result;
     }
+
+    public GridMark getWinner() {
+    	return GridMark.EMPTY;
+    }
+
+	public boolean isFinished() {
+		return false;
+	}
 }
