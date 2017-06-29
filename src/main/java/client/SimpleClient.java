@@ -184,6 +184,9 @@ public class SimpleClient implements Runnable {
                     this.disconnect();
                     running = false;
                     break;
+                default:
+                    System.out.println("Unknown request type \"" + choice + "\"");
+                    break;
             }
 
 
@@ -292,8 +295,9 @@ public class SimpleClient implements Runnable {
                 return "[start,exit,disconnect]";
             case GAME_OVER:
                 return "[restart,exit,disconnect]";
+            default:
+                return "no command";
         }
-        return "no command";
     }
 
     private boolean correctCommand(String command) {
@@ -306,9 +310,9 @@ public class SimpleClient implements Runnable {
                 return command.equals("start") || command.equals("exit") || command.equals("disconnect");
             case GAME_OVER:
                 return command.equals("restart") || command.equals("exit") || command.equals("disconnect");
-
+            default:
+                return false;
         }
-        return false;
     }
 
     private void connectForLobby() {

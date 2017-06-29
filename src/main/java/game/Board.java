@@ -21,9 +21,9 @@ public class Board {
     private static final int[] FORWARD = new int[]{0, -1, 0};
     private static final int[] BACKWARD = new int[]{0, 1, 0};
 
-    private static final int[][] axis1 = new int[][]{UP, DOWN};
-    private static final int[][] axis2 = new int[][]{LEFT, RIGHT};
-    private static final int[][] axis3 = new int[][]{FORWARD, BACKWARD};
+    private static final int[][] AXIS_1 = new int[][]{UP, DOWN};
+    private static final int[][] AXIS_2 = new int[][]{LEFT, RIGHT};
+    private static final int[][] AXIS_3 = new int[][]{FORWARD, BACKWARD};
 
     /**
      * 2D
@@ -42,12 +42,12 @@ public class Board {
     private static final int[] D11 = new int[]{0, 1, -1};
     private static final int[] D12 = new int[]{0, -1, 1};
 
-    private static final int[][] axis4 = new int[][]{D1, D2};
-    private static final int[][] axis5 = new int[][]{D3, D4};
-    private static final int[][] axis6 = new int[][]{D5, D6};
-    private static final int[][] axis7 = new int[][]{D7, D8};
-    private static final int[][] axis8 = new int[][]{D9, D10};
-    private static final int[][] axis9 = new int[][]{D11, D12};
+    private static final int[][] AXIS_4 = new int[][]{D1, D2};
+    private static final int[][] AXIS_5 = new int[][]{D3, D4};
+    private static final int[][] AXIS_6 = new int[][]{D5, D6};
+    private static final int[][] AXIS_7 = new int[][]{D7, D8};
+    private static final int[][] AXIS_8 = new int[][]{D9, D10};
+    private static final int[][] AXIS_9 = new int[][]{D11, D12};
 
     /**
      * 3D
@@ -62,15 +62,15 @@ public class Board {
     private static final int[] DD7 = new int[]{-1, 1, 1};
     private static final int[] DD8 = new int[]{1, -1, -1};
 
-    private static final int[][] axis10 = new int[][]{DD1, DD2};
-    private static final int[][] axis11 = new int[][]{DD3, DD4};
-    private static final int[][] axis12 = new int[][]{DD5, DD6};
-    private static final int[][] axis13 = new int[][]{DD7, DD8};
+    private static final int[][] AXIS_10 = new int[][]{DD1, DD2};
+    private static final int[][] AXIS_11 = new int[][]{DD3, DD4};
+    private static final int[][] AXIS_12 = new int[][]{DD5, DD6};
+    private static final int[][] AXIS_13 = new int[][]{DD7, DD8};
 
     /**
-     * All axes that need to be checked
+     * All AXES that need to be checked
      */
-    private static final int[][][] axes = new int[][][]{axis1, axis2, axis3, axis4, axis5, axis6, axis7, axis8, axis9, axis10, axis11, axis12, axis13};
+    private static final int[][][] AXES = new int[][][]{AXIS_1, AXIS_2, AXIS_3, AXIS_4, AXIS_5, AXIS_6, AXIS_7, AXIS_8, AXIS_9, AXIS_10, AXIS_11, AXIS_12, AXIS_13};
 
 
     public static final int CONNECT = 4;
@@ -146,7 +146,7 @@ public class Board {
     public boolean isWinner(Move move) {
         final GridMark color = move.getMark();
         final int[] origin = new int[]{move.getX(), move.getY(), move.getZ()};
-        for (int[][] axis : axes) {
+        for (int[][] axis : AXES) {
             int[] direction1 = axis[0];
             int[] direction2 = axis[1];
             int chainLength = 1;
